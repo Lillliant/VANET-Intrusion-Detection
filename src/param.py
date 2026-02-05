@@ -36,7 +36,6 @@ HYPERPARAMETERS = {
     'LogisticRegression': {
         'max_iter': 1000,
         'solver': 'lbfgs',  # Good for multi-class, efficient for large datasets
-        'multi_class': 'auto',
         'C': 1.0,  # Inverse regularization strength
         'random_state': 42,
         'n_jobs': -1

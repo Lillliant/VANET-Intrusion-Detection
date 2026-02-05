@@ -23,7 +23,6 @@ class LogisticRegressionModel(Base):
         default_params = {
             'max_iter': 1000,
             'solver': 'lbfgs',  # Good for multi-class problems
-            'multi_class': 'auto',
             'n_jobs': -1,  # Use all CPU cores
             'random_state': 42
         }
