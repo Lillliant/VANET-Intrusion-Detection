@@ -16,9 +16,8 @@ class XGBoostModel(Base):
             **kwargs: Hyperparameters for XGBClassifier
         """
         # Set default parameters if not provided
+        # Don't set objective here - let XGBClassifier infer it
         default_params = {
-            'objective': 'binary:logistic',
-            'eval_metric': 'logloss',
             'use_label_encoder': False
         }
         default_params.update(kwargs)
