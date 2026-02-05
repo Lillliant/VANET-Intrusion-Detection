@@ -51,6 +51,13 @@ class CNN(Base):
         self.reshaped_dim = reshaped_dim
         self.input_dim = input_dim
         
+        # Calculate if we have enough dimensions for pooling
+        # Each MaxPooling2D with pool_size=2 divides dimensions by 2
+        # We need at least 8x8 input for 3 pooling layers (8 -> 4 -> 2 -> 1)
+        min_dim = 8
+        if self.reshaped_dim < min_dim:
+            self.reshaped_dim = min_dim
+        
         model = models.Sequential([
             # Reshape to 2D for Conv2D
             layers.Reshape((self.reshaped_dim, self.reshaped_dim, 1), 
@@ -79,12 +86,13 @@ class CNN(Base):
             layers.Dropout(0.5),
             
             # Output layer
-            layers.Dense(self.num_classes, activation='softmax' if self.num_classes > 2 else 'sigmoid')
+            layers.Dense(1 if self.num_classes == 2 else self.num_classes, 
+                        activation='sigmoid' if self.num_classes == 2 else 'softmax')
         ])
         
         # Compile model
         optimizer = keras.optimizers.Adam(learning_rate=self.learning_rate)
-        loss = 'sparse_categorical_crossentropy' if self.num_classes > 2 else 'binary_crossentropy'
+        loss = 'binary_crossentropy' if self.num_classes == 2 else 'sparse_categorical_crossentropy'
         
         model.compile(
             optimizer=optimizer,
@@ -115,12 +123,16 @@ class CNN(Base):
         else:
             X = self.scaler.transform(X)
         
-        # Pad to square shape if needed
+        # Determine reshaped dimension if not already set
         if not hasattr(self, 'reshaped_dim'):
             input_dim = X.shape[1]
             reshaped_dim = int(np.sqrt(input_dim))
             if reshaped_dim * reshaped_dim < input_dim:
                 reshaped_dim += 1
+            # Ensure minimum dimension for pooling layers
+            min_dim = 8
+            if reshaped_dim < min_dim:
+                reshaped_dim = min_dim
             self.reshaped_dim = reshaped_dim
             self.input_dim = input_dim
         

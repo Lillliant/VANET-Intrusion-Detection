@@ -3,6 +3,10 @@ Test script to verify model implementations
 This creates synthetic data to test that all models can be instantiated and trained
 """
 
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+
 import numpy as np
 from sklearn.datasets import make_classification
 from model import RandomForest, XGBoostModel, CNN
