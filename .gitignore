@@ -206,3 +206,7 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 /data/veremi-extension-processed
+
+# Model outputs and generated data
+outputs/
+data/sample_dataset.csv
