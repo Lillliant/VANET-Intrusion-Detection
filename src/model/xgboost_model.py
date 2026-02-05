@@ -18,7 +18,9 @@ class XGBoostModel(Base):
         # Set default parameters if not provided
         # Don't set objective here - let XGBClassifier infer it
         default_params = {
-            'use_label_encoder': False
+            'objective': 'binary:logistic',
+            'eval_metric': 'mlogloss',
+            #'use_label_encoder': False
         }
         default_params.update(kwargs)
         
