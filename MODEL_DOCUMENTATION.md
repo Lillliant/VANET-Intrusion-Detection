@@ -1,9 +1,20 @@
 # Intrusion Detection Machine Learning Models
 
-This repository contains implementations of three machine learning models for intrusion detection:
+This repository contains implementations of six machine learning models for intrusion detection:
+
+**Tree-based & Ensemble Models:**
 1. **Random Forest** - Ensemble learning method using decision trees
 2. **XGBoost** - Gradient boosting framework with tree-based models
-3. **Convolutional Neural Network (CNN)** - Deep learning model for pattern recognition
+3. **LightGBM** - Efficient gradient boosting optimized for large datasets
+
+**Classical ML Models:**
+4. **Naive Bayes** - Probabilistic classifier based on Bayes' theorem
+5. **Logistic Regression** - Linear model for classification
+
+**Deep Learning:**
+6. **Convolutional Neural Network (CNN)** - Deep learning model for pattern recognition
+
+All models support **multi-class classification** and are optimized for large datasets (~3 million samples).
 
 ## Dataset
 
@@ -24,11 +35,13 @@ pip install -r requirements.txt
 
 ### Basic Usage
 
-Run the complete pipeline with all three models:
+Run the complete pipeline with all models:
 
 ```bash
 python src/main.py data/dataset.csv outputs
 ```
+
+By default, all six models will be trained. You can modify `src/param.py` to select specific models.
 
 Arguments:
 - First argument: Path to your CSV dataset file
@@ -49,7 +62,7 @@ The pipeline generates:
 
 2. **Trained Models**: Saved models for future use
    - Location: `outputs/models/`
-   - Random Forest and XGBoost: `.pkl` files
+   - Sklearn models (Random Forest, XGBoost, Naive Bayes, Logistic Regression, LightGBM): `.pkl` files
    - CNN: `.h5` file (model) and `_scaler.pkl` (scaler)
 
 3. **Console Output**: Real-time training progress and evaluation metrics
@@ -83,6 +96,42 @@ Models can be configured via `src/param.py`:
 }
 ```
 
+### LightGBM Hyperparameters
+```python
+'LightGBM': {
+    'objective': 'multiclass',  # Multi-class classification
+    'boosting_type': 'gbdt',    # Gradient boosting
+    'num_leaves': 31,           # Maximum leaves per tree
+    'learning_rate': 0.05,      # Learning rate
+    'n_estimators': 100,        # Number of boosting rounds
+    'subsample': 0.8,           # Subsample ratio
+    'colsample_bytree': 0.8,    # Feature subsample ratio
+    'reg_alpha': 0.1,           # L1 regularization
+    'reg_lambda': 0.1,          # L2 regularization
+    'random_state': 42,
+    'n_jobs': -1,
+    'verbose': -1
+}
+```
+
+### Naive Bayes Hyperparameters
+```python
+'NaiveBayes': {
+    'var_smoothing': 1e-9       # Variance smoothing parameter
+}
+```
+
+### Logistic Regression Hyperparameters
+```python
+'LogisticRegression': {
+    'max_iter': 1000,           # Maximum iterations
+    'solver': 'lbfgs',          # Optimization algorithm
+    'C': 1.0,                   # Inverse regularization strength
+    'random_state': 42,
+    'n_jobs': -1
+}
+```
+
 ### CNN Hyperparameters
 ```python
 'CNN': {
@@ -107,6 +156,28 @@ Models can be configured via `src/param.py`:
 - Built-in regularization
 - Early stopping for optimal performance
 - Feature importance analysis
+
+### LightGBM
+- Histogram-based gradient boosting
+- Optimized for large datasets (millions of samples)
+- Faster training than XGBoost on large data
+- Lower memory usage
+- Excellent for multi-class classification
+- Feature importance analysis
+
+### Naive Bayes
+- Probabilistic classifier (Gaussian Naive Bayes)
+- Extremely fast training and prediction
+- Works well with high-dimensional data
+- Assumes feature independence
+- Ideal for very large datasets
+
+### Logistic Regression
+- Linear classification model
+- Fast and interpretable
+- Supports multi-class via one-vs-rest or multinomial
+- L2 regularization by default
+- Efficient for large datasets with parallel processing
 
 ### CNN
 - 2D Convolutional architecture
@@ -140,7 +211,7 @@ All models inherit from the `Base` class and implement:
 ### Example Usage
 
 ```python
-from model import RandomForest, XGBoostModel, CNN
+from model import RandomForest, XGBoostModel, CNN, NaiveBayes, LogisticRegressionModel, LightGBMModel
 
 # Random Forest
 rf = RandomForest(n_estimators=100, max_depth=20)
@@ -153,6 +224,24 @@ xgb = XGBoostModel(n_estimators=100, learning_rate=0.1)
 xgb.train(X_train, y_train, eval_set=[(X_val, y_val)])
 predictions = xgb.predict(X_test)
 feature_importance = xgb.get_feature_importance()
+
+# LightGBM (optimized for large datasets)
+lgb = LightGBMModel(n_estimators=100, num_leaves=31)
+lgb.train(X_train, y_train, eval_set=[(X_val, y_val)], early_stopping_rounds=10)
+predictions = lgb.predict(X_test)
+feature_importance = lgb.get_feature_importance()
+
+# Naive Bayes (fast for large datasets)
+nb = NaiveBayes(var_smoothing=1e-9)
+nb.train(X_train, y_train)
+predictions = nb.predict(X_test)
+probabilities = nb.predict_proba(X_test)
+
+# Logistic Regression (interpretable linear model)
+lr = LogisticRegressionModel(max_iter=1000, C=1.0)
+lr.train(X_train, y_train)
+predictions = lr.predict(X_test)
+coefficients = lr.get_coefficients()
 
 # CNN
 cnn = CNN(epochs=50, batch_size=32)
@@ -183,19 +272,22 @@ The pipeline automatically:
 ```
 COMP-4990-Intrusion-Detection/
 ├── src/
-│   ├── main.py                 # Main pipeline
-│   ├── param.py                # Model configurations
+│   ├── main.py                      # Main pipeline
+│   ├── param.py                     # Model configurations
 │   └── model/
-│       ├── __init__.py         # Package initialization
-│       ├── base.py             # Base model class
-│       ├── random_forest.py    # Random Forest implementation
-│       ├── xgboost_model.py    # XGBoost implementation
-│       └── cnn.py              # CNN implementation
+│       ├── __init__.py              # Package initialization
+│       ├── base.py                  # Base model class
+│       ├── random_forest.py         # Random Forest implementation
+│       ├── xgboost_model.py         # XGBoost implementation
+│       ├── lightgbm_model.py        # LightGBM implementation
+│       ├── naive_bayes.py           # Naive Bayes implementation
+│       ├── logistic_regression.py   # Logistic Regression implementation
+│       └── cnn.py                   # CNN implementation
 ├── data/
-│   └── readme.md               # Data documentation
-├── outputs/                    # Generated results (created automatically)
-├── requirements.txt            # Python dependencies
-└── README.md                   # This file
+│   └── readme.md                    # Data documentation
+├── outputs/                         # Generated results (created automatically)
+├── requirements.txt                 # Python dependencies
+└── README.md                        # This file
 ```
 
 ## Requirements
@@ -205,6 +297,7 @@ COMP-4990-Intrusion-Detection/
 - Pandas >= 1.3.0
 - Scikit-learn >= 1.0.0
 - XGBoost >= 1.5.0
+- LightGBM >= 3.3.0
 - TensorFlow >= 2.10.0
 - Matplotlib >= 3.4.0
 - Seaborn >= 0.11.0
