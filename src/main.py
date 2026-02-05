@@ -1,6 +1,7 @@
 """
 Machine Learning Pipeline for Intrusion Detection
-This framework trains and evaluates Random Forest, XGBoost, and CNN models on the VeReMi dataset.
+This framework trains and evaluates multiple ML models on the VeReMi dataset.
+Supports: Random Forest, XGBoost, CNN, Naive Bayes, Logistic Regression, and LightGBM.
 """
 
 import os
@@ -14,6 +15,9 @@ from sklearn.model_selection import train_test_split
 from model.random_forest import RandomForest
 from model.xgboost_model import XGBoostModel
 from model.cnn import CNN
+from model.naive_bayes import NaiveBayes
+from model.logistic_regression import LogisticRegressionModel
+from model.lightgbm_model import LightGBMModel
 import param
 
 
@@ -97,7 +101,7 @@ def train(model_name, X_train, y_train, X_val, y_val):
     Train a specific model
     
     Args:
-        model_name: Name of the model to train ('RandomForest', 'XGBoost', or 'CNN')
+        model_name: Name of the model to train
         X_train: Training features
         y_train: Training labels
         X_val: Validation features
@@ -129,6 +133,20 @@ def train(model_name, X_train, y_train, X_val, y_val):
         # Use validation set
         validation_data = (X_val, y_val)
         model.train(X_train, y_train, validation_data=validation_data)
+    
+    elif model_name == 'NaiveBayes':
+        model = NaiveBayes(**hyperparams)
+        model.train(X_train, y_train)
+    
+    elif model_name == 'LogisticRegression':
+        model = LogisticRegressionModel(**hyperparams)
+        model.train(X_train, y_train)
+    
+    elif model_name == 'LightGBM':
+        model = LightGBMModel(**hyperparams)
+        # Use validation set for early stopping
+        eval_set = [(X_val, y_val)]
+        model.train(X_train, y_train, eval_set=eval_set, early_stopping_rounds=10)
         
     else:
         raise ValueError(f"Unknown model: {model_name}")
