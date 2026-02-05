@@ -182,6 +182,7 @@ class CNN(Base):
         # Train model
         epochs = kwargs.get('epochs', self.epochs)
         batch_size = kwargs.get('batch_size', self.batch_size)
+        verbose = kwargs.get('verbose', 1)
         
         self.history = self.model.fit(
             X_train, y_train,
@@ -189,7 +190,7 @@ class CNN(Base):
             batch_size=batch_size,
             validation_data=validation_data,
             callbacks=callbacks,
-            verbose=1
+            verbose=verbose
         )
         
         self.trained = True
