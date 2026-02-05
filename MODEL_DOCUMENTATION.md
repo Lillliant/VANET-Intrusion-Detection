@@ -297,7 +297,7 @@ COMP-4990-Intrusion-Detection/
 - Pandas >= 1.3.0
 - Scikit-learn >= 1.0.0
 - XGBoost >= 1.5.0
-- LightGBM >= 3.3.0
+- LightGBM >= 4.6.0
 - TensorFlow >= 2.10.0
 - Matplotlib >= 3.4.0
 - Seaborn >= 0.11.0
