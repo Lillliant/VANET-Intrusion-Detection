@@ -1,0 +1,172 @@
+@Lillliant ➜ /workspaces/COMP-4990-Intrusion-Detection (copilot/create-ml-models-dataset) $ python src/main.py data/mixalldata_clean.csv outputs
+2026-02-05 21:22:06.293686: I external/local_xla/xla/tsl/cuda/cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+2026-02-05 21:22:07.659053: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2026-02-05 21:22:10.295277: I external/local_xla/xla/tsl/cuda/cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+============================================================
+Intrusion Detection ML Pipeline
+============================================================
+Models to train: XGBoost, CNN
+Output directory: outputs
+============================================================
+Loading data from data/mixalldata_clean.csv...
+Loaded 3194808 samples with 29 features
+Preprocessing data...
+Train set: 2236365 samples
+Validation set: 319481 samples
+Test set: 638962 samples
+
+============================================================
+Training XGBoost model...
+============================================================
+[0]     validation_0-mlogloss:2.30596
+[1]     validation_0-mlogloss:2.07986
+[2]     validation_0-mlogloss:1.91363
+[3]     validation_0-mlogloss:1.77534
+[4]     validation_0-mlogloss:1.66173
+[5]     validation_0-mlogloss:1.57471
+[6]     validation_0-mlogloss:1.49437
+[7]     validation_0-mlogloss:1.42167
+[8]     validation_0-mlogloss:1.35812
+[9]     validation_0-mlogloss:1.30286
+[10]    validation_0-mlogloss:1.25342
+[11]    validation_0-mlogloss:1.21099
+[12]    validation_0-mlogloss:1.17289
+[13]    validation_0-mlogloss:1.13668
+[14]    validation_0-mlogloss:1.10450
+[15]    validation_0-mlogloss:1.07545
+[16]    validation_0-mlogloss:1.04854
+[17]    validation_0-mlogloss:1.02476
+[18]    validation_0-mlogloss:1.00212
+[19]    validation_0-mlogloss:0.97985
+[20]    validation_0-mlogloss:0.96169
+[21]    validation_0-mlogloss:0.94447
+[22]    validation_0-mlogloss:0.92836
+[23]    validation_0-mlogloss:0.91321
+[24]    validation_0-mlogloss:0.89989
+[25]    validation_0-mlogloss:0.88641
+[26]    validation_0-mlogloss:0.87388
+[27]    validation_0-mlogloss:0.86082
+[28]    validation_0-mlogloss:0.85035
+[29]    validation_0-mlogloss:0.84009
+[30]    validation_0-mlogloss:0.83106
+[31]    validation_0-mlogloss:0.82187
+[32]    validation_0-mlogloss:0.81373
+[33]    validation_0-mlogloss:0.80585
+[34]    validation_0-mlogloss:0.79768
+[35]    validation_0-mlogloss:0.78991
+[36]    validation_0-mlogloss:0.78322
+[37]    validation_0-mlogloss:0.77695
+[38]    validation_0-mlogloss:0.77074
+[39]    validation_0-mlogloss:0.76413
+[40]    validation_0-mlogloss:0.75807
+[41]    validation_0-mlogloss:0.75206
+[42]    validation_0-mlogloss:0.74682
+[43]    validation_0-mlogloss:0.74160
+[44]    validation_0-mlogloss:0.73753
+[45]    validation_0-mlogloss:0.73262
+[46]    validation_0-mlogloss:0.72762
+[47]    validation_0-mlogloss:0.72311
+[48]    validation_0-mlogloss:0.71885
+[49]    validation_0-mlogloss:0.71464
+[50]    validation_0-mlogloss:0.70990
+[51]    validation_0-mlogloss:0.70618
+[52]    validation_0-mlogloss:0.70237
+[53]    validation_0-mlogloss:0.69912
+[54]    validation_0-mlogloss:0.69562
+[55]    validation_0-mlogloss:0.69225
+[56]    validation_0-mlogloss:0.68964
+[57]    validation_0-mlogloss:0.68606
+[58]    validation_0-mlogloss:0.68234
+[59]    validation_0-mlogloss:0.67888
+[60]    validation_0-mlogloss:0.67597
+[61]    validation_0-mlogloss:0.67342
+[62]    validation_0-mlogloss:0.67000
+[63]    validation_0-mlogloss:0.66603
+[64]    validation_0-mlogloss:0.66331
+[65]    validation_0-mlogloss:0.66058
+[66]    validation_0-mlogloss:0.65749
+[67]    validation_0-mlogloss:0.65448
+[68]    validation_0-mlogloss:0.65169
+[69]    validation_0-mlogloss:0.64930
+[70]    validation_0-mlogloss:0.64685
+[71]    validation_0-mlogloss:0.64390
+[72]    validation_0-mlogloss:0.64113
+[73]    validation_0-mlogloss:0.63886
+[74]    validation_0-mlogloss:0.63629
+[75]    validation_0-mlogloss:0.63375
+[76]    validation_0-mlogloss:0.63150
+[77]    validation_0-mlogloss:0.62959
+[78]    validation_0-mlogloss:0.62774
+[79]    validation_0-mlogloss:0.62587
+[80]    validation_0-mlogloss:0.62354
+[81]    validation_0-mlogloss:0.62174
+[82]    validation_0-mlogloss:0.61982
+[83]    validation_0-mlogloss:0.61803
+[84]    validation_0-mlogloss:0.61542
+[85]    validation_0-mlogloss:0.61329
+[86]    validation_0-mlogloss:0.61122
+[87]    validation_0-mlogloss:0.60931
+[88]    validation_0-mlogloss:0.60692
+[89]    validation_0-mlogloss:0.60530
+[90]    validation_0-mlogloss:0.60390
+[91]    validation_0-mlogloss:0.60215
+[92]    validation_0-mlogloss:0.60026
+[93]    validation_0-mlogloss:0.59857
+[94]    validation_0-mlogloss:0.59651
+[95]    validation_0-mlogloss:0.59397
+[96]    validation_0-mlogloss:0.59212
+[97]    validation_0-mlogloss:0.59020
+[98]    validation_0-mlogloss:0.58819
+[99]    validation_0-mlogloss:0.58613
+XGBoost training completed!
+
+Evaluating XGBoost...
+
+Results for XGBoost:
+  Accuracy:  0.8377
+  Precision: 0.8552
+  Recall:    0.8377
+  F1-Score:  0.7963
+
+Confusion Matrix:
+[[379890     10     13     28      0      0      5      0     16     11
+      14     20      2     11      1     71     14      2      0      0]
+ [  1207   7376     17    117      0      0      0      0      0      0
+       9      0      0      0      1      4      0      0      0      0]
+ [  4457      1   4222     26      1      0      0      0      0      0
+       3      0      0      0      0      3      0      0      0      0]
+ [  2477    219    191   5854     20      0      0      0      0      1
+       1      0      0      0      3      5      0      0      0      0]
+ [  7329      4    102     15   1062      0      0      0      0      0
+       0      0      0      0      0      3      0      0      0      0]
+ [    73      0      0      0      0   7754     67    296      6      0
+       0      2      0      0    176     11      0      0      0      0]
+ [   559      0      0      0      0      1   8209     12     42      0
+       0      0      0      0     29     20      0      0      0      0]
+ [   281      0      0      0      0    512    353   6874    144      0
+       2      0      0      0    272     13      0      0      0      0]
+ [  1359      0      0      0      0      4   1540     48   5525      0
+       4      4      0      0     19     14      0      0      0      0]
+ [  1488      0      0      1      0      0      0      0      0   7069
+       0      0      0      0      0      0      0      0      0      0]
+ [  6054    108     71    100     14     92    120    134     58     75
+     461      2     94      2   1182     61     25      0      0      0]
+ [  7537     21     14     22      4     75    138    115    110     85
+      17    324      6      3    325     51     19      0      1      0]
+ [  3956      0      0      0      0      0      2      0      2      0
+       0      0   4651      0      0     13      0      0      0      0]
+ [ 23422      0      0      0      0      0      0      0      0      0
+       0      0      0   2839      0      0      0      0      0      0]
+ [   135      4      4     38      1      6     18     34      9      0
+       0      0      0      0  25091      5      0      0      0      0]
+ [ 18605    170    117    165     42    282    480    190    232    220
+      18      4     87     20   1858   3353     11      0      0      0]
+ [  7097      2      0      0      0      0      0      0      0      0
+       0      0      0      0      0      0  27978      1      0      0]
+ [    60      0      1      6      1      1      2      0      3      0
+       0      0      0      1      1      0     68   5615    387   2716]
+ [     1      0      0      0      0      0      0      0      0      0
+       1      0      0      0    132      5      3     23  17087    125]
+ [   150      3      3      6      0      1      4      4      9      2
+       0      0      0      0     15      3     90    912   1213  14005]]
