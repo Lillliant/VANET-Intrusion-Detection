@@ -1,0 +1,72 @@
+@Lillliant ➜ /workspaces/COMP-4990-Intrusion-Detection (copilot/create-ml-models-dataset) $ python src/main.py data/mixalldata_clean.csv outputs
+2026-02-05 22:02:50.692067: I external/local_xla/xla/tsl/cuda/cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+2026-02-05 22:02:50.743136: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2026-02-05 22:02:53.162080: I external/local_xla/xla/tsl/cuda/cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+============================================================
+Intrusion Detection ML Pipeline
+============================================================
+Models to train: NaiveBayes, LogisticRegression, LightGBM
+Output directory: outputs
+============================================================
+Loading data from data/mixalldata_clean.csv...
+Loaded 3194808 samples with 29 features
+Preprocessing data...
+Train set: 2236365 samples
+Validation set: 319481 samples
+Test set: 638962 samples
+
+============================================================
+Training NaiveBayes model...
+============================================================
+NaiveBayes training completed!
+
+Evaluating NaiveBayes...
+
+Results for NaiveBayes:
+  Accuracy:  0.6170
+  Precision: 0.4139
+  Recall:    0.6170
+  F1-Score:  0.4871
+
+Confusion Matrix:
+[[380108      0      0      0      0      0      0      0      0      0
+       0      0      0      0      0      0      0      0      0      0]
+ [  8731      0      0      0      0      0      0      0      0      0
+       0      0      0      0      0      0      0      0      0      0]
+ [  8713      0      0      0      0      0      0      0      0      0
+       0      0      0      0      0      0      0      0      0      0]
+ [  8771      0      0      0      0      0      0      0      0      0
+       0      0      0      0      0      0      0      0      0      0]
+ [  8515      0      0      0      0      0      0      0      0      0
+       0      0      0      0      0      0      0      0      0      0]
+ [  8385      0      0      0      0      0      0      0      0      0
+       0      0      0      0      0      0      0      0      0      0]
+ [  8872      0      0      0      0      0      0      0      0      0
+       0      0      0      0      0      0      0      0      0      0]
+ [  8451      0      0      0      0      0      0      0      0      0
+       0      0      0      0      0      0      0      0      0      0]
+ [  8517      0      0      0      0      0      0      0      0      0
+       0      0      0      0      0      0      0      0      0      0]
+ [  8558      0      0      0      0      0      0      0      0      0
+       0      0      0      0      0      0      0      0      0      0]
+ [  8653      0      0      0      0      0      0      0      0      0
+       0      0      0      0      0      0      0      0      0      0]
+ [  8867      0      0      0      0      0      0      0      0      0
+       0      0      0      0      0      0      0      0      0      0]
+ [  8624      0      0      0      0      0      0      0      0      0
+       0      0      0      0      0      0      0      0      0      0]
+ [ 26261      0      0      0      0      0      0      0      0      0
+       0      0      0      0      0      0      0      0      0      0]
+ [ 25345      0      0      0      0      0      0      0      0      0
+       0      0      0      0      0      0      0      0      0      0]
+ [ 25854      0      0      0      0      0      0      0      0      0
+       0      0      0      0      0      0      0      0      0      0]
+ [ 29253      0      0      0      0      0      0      0      0      0
+       0      0      0      0      0      0   3328      0   2497      0]
+ [  2081      0      0      0      0      0      0      0      0      0
+       0      0      0      0      0      0   2235      0   3616    930]
+ [  3225      0      0      0      0      0      0      0      0      0
+       0      0      0      0      0      0   3301      0   8104   2747]
+ [  3093      0      0      0      0      0      0      0      0      0
+       0      0      0      0      0      0   3101      0   7505   2721]]
