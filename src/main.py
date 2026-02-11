@@ -184,6 +184,11 @@ def aggregate(results, output_dir):
     with open(summary_path, 'w') as f:
         json.dump(summary, f, indent=2)
     print(f"\nResults saved to {summary_path}")
+
+    # Copy a set of param.py parameters to the output directory for traceability
+    param_copy_path = os.path.join(output_dir, f"param_{timestamp}.py")
+    with open(param_copy_path, 'w') as f:
+        f.write(json.dumps(param, indent=4))
     
     # Print comparison table
     print("\n" + "="*60)
