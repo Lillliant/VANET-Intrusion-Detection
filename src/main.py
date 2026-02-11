@@ -278,6 +278,7 @@ if __name__ == "__main__":
     output_dir = sys.argv[2] if len(sys.argv) > 2 else "outputs"
 
     # Check if a timestamp string is provided for the outputs directory
+    # This allows easier movement of Colab-generated logs into the outputs directory
     if len(sys.argv) > 3:
         output_dir = os.path.join(output_dir, "run " + sys.argv[3])
     else:
