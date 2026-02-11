@@ -166,7 +166,8 @@ def aggregate(results, output_dir):
     summary = {
         'timestamp': datetime.now().isoformat(),
         'models': list(results.keys()),
-        'hyperparameters': param.HYPERPARAMETERS,
+        'class': param.DATA_PARAMS['class'],
+        'hyperparameters': {model: param.HYPERPARAMETERS.get(model, {}) for model in results.keys()},
         'results': {}
     }
     
@@ -248,8 +249,9 @@ def main(data_path, output_dir='outputs'):
             wrapped, gs = train(model_name, X_train, y_train, X_val, y_val)
             trained_models[model_name] = wrapped
             metrics = validate(wrapped, X_test, y_test)
-            # attach best params for traceability
+            # attach best params and cv results
             metrics['best_params'] = getattr(gs, 'best_params_', {})
+            metrics['cv_results'] = getattr(gs, 'cv_results_', {})
             results[model_name] = metrics
         except Exception as e:
             print(f"\nError training {model_name}: {str(e)}")

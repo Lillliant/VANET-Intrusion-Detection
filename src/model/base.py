@@ -16,7 +16,7 @@ class Base:
     def train(self, X_train, y_train, **kwargs):            
         start_time = time.perf_counter()
         self.model.fit(X_train, y_train)
-        self.training_time = time.perf_counter() - start_time
+        self.training_time = time.perf_counter() - start_time # training time in seconds
         print(f"{self.name} training completed in {self.training_time:.2f} seconds.")
         self.trained = True
         return self

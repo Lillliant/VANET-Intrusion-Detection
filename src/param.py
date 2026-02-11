@@ -7,7 +7,7 @@ MODELS = [
 HYPERPARAMETERS = {
 	'RandomForest': {
 		'n_estimators': 100,
-		'max_depth': None,
+		'max_depth': 10,
 		'random_state': 42,
 		'n_jobs': -1
 	},
