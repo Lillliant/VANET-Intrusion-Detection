@@ -192,7 +192,7 @@ def aggregate(results, output_dir):
 
     # Copy param.py to the output directory for traceability
     param_copy_path = os.path.join(output_dir, f"param_{timestamp}.py")
-    shutil.copy('param.py', param_copy_path)
+    shutil.copy('src/param.py', param_copy_path)
     print(f"Copied param.py to {param_copy_path}")
     
     # Print comparison table
