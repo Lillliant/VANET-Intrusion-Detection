@@ -265,28 +265,28 @@ def main(data_path, output_dir='outputs'):
 
 
 if __name__ == "__main__":
-    import sys
+    import argparse
     """
     Usage:
-        python main.py <data_path> <output_dir>
+        python main.py [data_path] [output_dir] [timestamp]
     """
     
-    # Check if data path is provided
-    data_path = sys.argv[1] if len(sys.argv) > 1 else "../data/mixalldata_clean.csv"
-    
-    # Check if output directory is provided
-    output_dir = sys.argv[2] if len(sys.argv) > 2 else "outputs"
+    parser = argparse.ArgumentParser()
+    parser.add_argument('data_path', nargs='?', default="../data/mixalldata_clean.csv", help="Path to the input CSV data file")
+    parser.add_argument('output_dir', nargs='?', default="outputs", help="Directory to save outputs")
+    parser.add_argument('timestamp', nargs='?', default=datetime.now().strftime("%Y%m%d_%H%M%S"), help="Optional timestamp string for output directory naming")
+    args = parser.parse_args()
 
     # Check if a timestamp string is provided for the outputs directory
     # This allows easier movement of Colab-generated logs into the outputs directory
-    if len(sys.argv) > 3:
-        output_dir = os.path.join(output_dir, "run " + sys.argv[3])
+    if args.timestamp:
+        output_dir = os.path.join(args.output_dir, "run " + args.timestamp)
     else:
-        output_dir = os.path.join(output_dir, "run " + datetime.now().strftime("%Y%m%d_%H%M%S"))
+        output_dir = os.path.join(args.output_dir, "run " + datetime.now().strftime("%Y%m%d_%H%M%S"))
     
     # Create directory for storing output
     os.makedirs(output_dir, exist_ok=True)
 
     # Run the pipeline
-    main(data_path, output_dir)
+    main(args.data_path, output_dir)
 
