@@ -153,7 +153,7 @@ def validate(model_wrapper, X_test, y_test):
 
 def aggregate(results, output_dir):
     """
-    Aggregate and save final statistics to a timestamped JSON file
+    Aggregate and save final statistics
     """
     print(f"\n{'='*60}")
     print("Aggregating Results")
@@ -184,14 +184,13 @@ def aggregate(results, output_dir):
         summary['results'][model_name] = entry
     
     # Save summary to JSON
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    summary_path = os.path.join(output_dir, f"results_{timestamp}.json")
+    summary_path = os.path.join(output_dir, f"results.json")
     with open(summary_path, 'w') as f:
         json.dump(summary, f, indent=2)
     print(f"\nResults saved to {summary_path}")
 
     # Copy param.py to the output directory for traceability
-    param_copy_path = os.path.join(output_dir, f"param_{timestamp}.py")
+    param_copy_path = os.path.join(output_dir, f"param.py")
     shutil.copy('src/param.py', param_copy_path)
     print(f"Copied param.py to {param_copy_path}")
     
