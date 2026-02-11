@@ -235,11 +235,6 @@ def main(data_path, output_dir='outputs'):
     X, y = load(data_path)
     X_train, X_val, X_test, y_train, y_val, y_test = preprocess(X, y)
 
-    # Prepare timestamped output directory
-    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_root = os.path.join(output_dir, "run " + ts)
-    os.makedirs(output_root, exist_ok=True)
-
     trained_models = {}
     results = {}
 
@@ -259,8 +254,8 @@ def main(data_path, output_dir='outputs'):
             traceback.print_exc()
 
     if results:
-        aggregate(results, output_root)
-        save_models(trained_models, output_root)
+        aggregate(results, output_dir)
+        save_models(trained_models, output_dir)
     else:
         print("\nNo models were successfully trained.")
     
@@ -277,18 +272,20 @@ if __name__ == "__main__":
     """
     
     # Check if data path is provided
-    if len(sys.argv) > 1:
-        data_path = sys.argv[1]
-    else:
-        # Default data path
-        data_path = "../data/mixalldata_clean.csv"
+    data_path = sys.argv[1] if len(sys.argv) > 1 else "../data/mixalldata_clean.csv"
     
     # Check if output directory is provided
-    if len(sys.argv) > 2:
-        output_dir = sys.argv[2]
+    output_dir = sys.argv[2] if len(sys.argv) > 2 else "outputs"
+
+    # Check if a timestamp string is provided for the outputs directory
+    if len(sys.argv) > 3:
+        output_dir = os.path.join(output_dir, "run " + sys.argv[3])
     else:
-        output_dir = "outputs"
+        output_dir = os.path.join(output_dir, "run " + datetime.now().strftime("%Y%m%d_%H%M%S"))
     
+    # Create directory for storing output
+    os.makedirs(output_dir, exist_ok=True)
+
     # Run the pipeline
     main(data_path, output_dir)
 
