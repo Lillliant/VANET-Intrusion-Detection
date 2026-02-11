@@ -28,6 +28,15 @@ def load(data_path):
 def preprocess(X, y):
     """Create train/validation/test split."""
     print("Preprocessing data...")
+
+    # Filter out the desired class if specified in parameters
+    if param.DATA_PARAMS['class'] is not None:
+        print(f"Filtering to examine only class {param.DATA_PARAMS['class']}...")
+        mask = (y == param.DATA_PARAMS['class'])
+        X = X[mask]
+        y = y[mask]
+        print(f"Filtered dataset has {X.shape[0]} samples")
+
     X_temp, X_test, y_temp, y_test = train_test_split(
         X, y,
         test_size=param.DATA_PARAMS['test_size'],
