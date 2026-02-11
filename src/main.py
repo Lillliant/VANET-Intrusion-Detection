@@ -6,9 +6,10 @@ import time
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split, GridSearchCV, PredefinedSplit
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
+from sklearn.metrics import confusion_matrix
 from model.base import Base
 import param
+import util.metrics
 
 def load(data_path):
     """Load dataset from CSV file."""
@@ -117,14 +118,7 @@ def validate(model_wrapper, X_test, y_test):
     """Evaluate using metrics selected in `param.METRICS` and include confusion matrix."""
     print(f"\nEvaluating {model_wrapper.name}...")
 
-    scorer_map = {
-        'accuracy': accuracy_score,
-        'precision': precision_score,
-        'recall': recall_score,
-        'f1': f1_score
-    }
-
-    scorers = {m: scorer_map[m] for m in param.METRICS if m in scorer_map}
+    scorers = util.metrics.get_scorers(param.METRICS, multiclass=param.DATA_PARAMS['class'] is None)
     metrics = model_wrapper.evaluate(X_test, y_test, scorers=scorers)
 
     # Add confusion matrix separately

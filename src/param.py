@@ -1,9 +1,6 @@
 # Models to train
 MODELS = [
-	'RandomForest',
 	'XGBoost',
-	'LogisticRegression',
-	'NaiveBayes'
 ]
 
 # Default hyperparameters used to initialize estimators (non-grid defaults)
@@ -18,7 +15,6 @@ HYPERPARAMETERS = {
 		'n_estimators': 100,
 		'max_depth': 6,
 		'learning_rate': 0.1,
-		'use_label_encoder': False,
 		'eval_metric': 'logloss',
 		'random_state': 42
 	},
@@ -31,9 +27,19 @@ HYPERPARAMETERS = {
 	'NaiveBayes': {
 		'var_smoothing': 1e-9
 	},
+    'KNN': {
+        'n_neighbors': 5,
+        'weights': 'uniform'
+    },
+    'DecisionTree': {
+        'max_depth': 10,
+        'min_samples_split': 500,
+        'random_state': 42
+    }
 }
 
 # Parameter grids for GridSearchCV
+"""
 GRID_PARAMS = {
 	'RandomForest': {
 		'n_estimators': [100, 200],
@@ -47,14 +53,24 @@ GRID_PARAMS = {
 	'LogisticRegression': {
 		'C': [0.01, 0.1, 1.0, 10.0]
 	},
+    'KNN': {
+        'n_neighbors': [3, 5, 7],
+        'weights': ['uniform', 'distance']
+    },
+    'DecisionTree': {
+        'max_depth': [None, 10, 20, 30],
+        'min_samples_split': [100, 500, 1000]
+    },
 	'NaiveBayes': {
 		'var_smoothing': [1e-9, 1e-8, 1e-7]
 	}
 }
+"""
 
 # Data and CV configuration
 DATA_PARAMS = {
 	'test_size': 0.15,
+    'class': 15, # Examine only one class; Otherwise, examine all classes (set to None)
     'validation_size': 0.15,
 	'random_state': 42,
 }
