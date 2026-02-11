@@ -77,7 +77,7 @@ DATA_PARAMS = {
 
 # Metrics selection for evaluation and GridSearchCV
 # The first entry is used as the primary metric to refit in GridSearchCV
-METRICS = ['f1', 'precision', 'recall', 'accuracy']
+METRICS = ['f1_score', 'precision', 'recall', 'accuracy']
 REFIT_METRIC = METRICS[0]
 
 # Misc
