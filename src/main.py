@@ -3,6 +3,7 @@ import json
 import pickle
 from datetime import datetime
 import time
+import shutil
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split, GridSearchCV, PredefinedSplit
@@ -30,11 +31,13 @@ def preprocess(X, y):
     print("Preprocessing data...")
 
     # Filter out the desired class if specified in parameters
+    # In this case, we will perform binary classification
     if param.DATA_PARAMS['class'] is not None:
         print(f"Filtering to examine only class {param.DATA_PARAMS['class']}...")
-        mask = (y == param.DATA_PARAMS['class'])
+        mask = (y == param.DATA_PARAMS['class']) | (y == 0)  # Keep the specified class and the normal class (0)
         X = X[mask]
         y = y[mask]
+        y = np.where(y == param.DATA_PARAMS['class'], 1, 0) # Convert to binary labels
         print(f"Filtered dataset has {X.shape[0]} samples")
 
     X_temp, X_test, y_temp, y_test = train_test_split(
@@ -84,12 +87,8 @@ def train(model_name, X_train, y_train, X_val, y_val):
     If a grid parameter is given, run GridSearchCV; otherwise, 
     fit the estimator directly using default hyperparameters.
     """
-    print(f"\n{'='*60}")
-    print(f"Tuning and training {model_name} with GridSearchCV...")
-    print(f"{'='*60}")
-
     estimator = get_estimator(model_name)
-    param_grid = param.GRID_PARAMS.get(model_name, None)
+    param_grid = param.GRID_PARAMS.get(model_name, None) if hasattr(param, 'GRID_PARAMS') else None
 
     # Build scoring dict for GridSearchCV
     scoring = {m: m for m in param.METRICS}
@@ -97,6 +96,9 @@ def train(model_name, X_train, y_train, X_val, y_val):
     cv = PredefinedSplit(test_fold=[-1]*len(X_train) + [0]*len(X_val))
 
     if param_grid:
+        print(f"\n{'='*60}")
+        print(f"Tuning and training {model_name} with GridSearchCV...")
+        print(f"{'='*60}")
         gs = GridSearchCV(
             estimator,
             param_grid=param_grid,
@@ -117,6 +119,9 @@ def train(model_name, X_train, y_train, X_val, y_val):
         return wrapped, gs
     else:
         # No grid provided: fit the estimator directly using default hyperparameters
+        print(f"\n{'='*60}")
+        print(f"Tuning and training {model_name} with default parameters...")
+        print(f"{'='*60}")
         hyperparams = param.HYPERPARAMETERS.get(model_name, {})
         wrapped = Base(model_name, estimator)
         wrapped.train(X_train, y_train, **hyperparams)
@@ -185,10 +190,10 @@ def aggregate(results, output_dir):
         json.dump(summary, f, indent=2)
     print(f"\nResults saved to {summary_path}")
 
-    # Copy a set of param.py parameters to the output directory for traceability
+    # Copy param.py to the output directory for traceability
     param_copy_path = os.path.join(output_dir, f"param_{timestamp}.py")
-    with open(param_copy_path, 'w') as f:
-        f.write(json.dumps(param, indent=4))
+    shutil.copy('param.py', param_copy_path)
+    print(f"Copied param.py to {param_copy_path}")
     
     # Print comparison table
     print("\n" + "="*60)
