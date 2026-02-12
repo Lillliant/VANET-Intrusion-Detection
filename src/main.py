@@ -162,33 +162,9 @@ def aggregate(results, output_dir):
     # Create output directory if it doesn't exist
     os.makedirs(output_dir, exist_ok=True)
     
-    # Create summary
-    summary = {
-        'timestamp': datetime.now().isoformat(),
-        'models': list(results.keys()),
-        'class': param.DATA_PARAMS['class'],
-        'hyperparameters': {model: param.HYPERPARAMETERS.get(model, {}) for model in results.keys()},
-        'results': {}
-    }
-    
-    # Format results
-    for model_name, metrics in results.items():
-        entry = {}
-        for k, v in metrics.items():
-            if k == 'confusion_matrix':
-                entry[k] = v.tolist()
-            else:
-                try:
-                    entry[k] = float(v)
-                except Exception:
-                    entry[k] = v
-        summary['results'][model_name] = entry
-    
-    # Save summary to JSON
-    summary_path = os.path.join(output_dir, f"results.json")
-    with open(summary_path, 'w') as f:
-        json.dump(summary, f, indent=2)
-    print(f"\nResults saved to {summary_path}")
+    # Save the results and summary to JSON file
+    summary = save_results(results, output_dir)
+    print(f"\nResults saved to {os.path.join(output_dir, 'results.json')}")
 
     # Copy param.py to the output directory for traceability
     param_copy_path = os.path.join(output_dir, f"param.py")
@@ -222,6 +198,33 @@ def save_models(models, output_dir):
             pickle.dump(model_instance, f)
         print(f"Saved {model_name} model to {model_path}.pkl")
 
+def save_results(results, output_dir):
+    # Create summary
+    summary = {
+        'timestamp': datetime.now().isoformat(),
+        'models': list(results.keys()),
+        'class': param.DATA_PARAMS['class'],
+        'hyperparameters': {model: param.HYPERPARAMETERS.get(model, {}) for model in results.keys()},
+        'results': {}
+    }
+    
+    # Format results
+    for model_name, metrics in results.items():
+        entry = {}
+        for k, v in metrics.items():
+            if k == 'confusion_matrix':
+                entry[k] = v.tolist()
+            else:
+                try:
+                    entry[k] = float(v)
+                except Exception:
+                    entry[k] = v
+        summary['results'][model_name] = entry
+    
+    # Save summary to JSON
+    summary_path = os.path.join(output_dir, f"results.json")
+    with open(summary_path, 'w') as f:
+        json.dump(summary, f, indent=2)
 
 def main(data_path, output_dir='outputs'):
     print("="*60)
@@ -235,19 +238,19 @@ def main(data_path, output_dir='outputs'):
     X, y = load(data_path)
     X_train, X_val, X_test, y_train, y_val, y_test = preprocess(X, y)
 
-    trained_models = {}
     results = {}
 
     for model_name in param.MODELS:
         try:
             # Depend on given parameters, either run GridSearchCV or fit directly with default hyperparameters
             wrapped, gs = train(model_name, X_train, y_train, X_val, y_val)
-            trained_models[model_name] = wrapped
             metrics = validate(wrapped, X_test, y_test)
             # attach best params and cv results
             metrics['best_params'] = getattr(gs, 'best_params_', {})
             metrics['cv_results'] = getattr(gs, 'cv_results_', {})
             results[model_name] = metrics
+            # Save models immediately after they are done for partial results
+            save_models({model_name: wrapped}, output_dir)
         except Exception as e:
             print(f"\nError training {model_name}: {str(e)}")
             import traceback
@@ -255,7 +258,6 @@ def main(data_path, output_dir='outputs'):
 
     if results:
         aggregate(results, output_dir)
-        save_models(trained_models, output_dir)
     else:
         print("\nNo models were successfully trained.")
     

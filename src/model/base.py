@@ -12,6 +12,7 @@ class Base:
         self.model = model
         self.trained = False
         self.training_time = None
+        self.evaluation_time = None
 
     def train(self, X_train, y_train, **kwargs):            
         start_time = time.perf_counter()
@@ -32,8 +33,11 @@ class Base:
         if scorers is None:
                 raise ValueError("Scorers must be provided for evaluation")
         
+        start_time = time.perf_counter()
         y_pred = self.predict(X_test)
-        metrics = {'training_time': self.training_time}
+        self.evaluation_time = time.perf_counter() - start_time # evaluation time in seconds
+        print(f"{self.name} evaluation completed in {self.evaluation_time:.2f} seconds.")
+        metrics = {'training_time': self.training_time, 'evaluation_time': self.evaluation_time}
         for score_name, scorer in scorers.items():
                 metrics[score_name] = scorer(y_test, y_pred)
         return metrics
