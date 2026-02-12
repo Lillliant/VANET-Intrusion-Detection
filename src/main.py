@@ -272,9 +272,9 @@ if __name__ == "__main__":
     """
     
     parser = argparse.ArgumentParser()
-    parser.add_argument('data_path', nargs='?', default="../data/mixalldata_clean.csv", help="Path to the input CSV data file")
-    parser.add_argument('output_dir', nargs='?', default="outputs", help="Directory to save outputs")
-    parser.add_argument('timestamp', nargs='?', default=datetime.now().strftime("%Y%m%d_%H%M%S"), help="Optional timestamp string for output directory naming")
+    parser.add_argument('--data_path', nargs='?', default="../data/mixalldata_clean.csv", help="Path to the input CSV data file")
+    parser.add_argument('--output_dir', nargs='?', default="outputs", help="Directory to save outputs")
+    parser.add_argument('--timestamp', nargs='?', default=datetime.now().strftime("%Y%m%d_%H%M%S"), help="Optional timestamp string for output directory naming")
     args = parser.parse_args()
 
     # Check if a timestamp string is provided for the outputs directory
