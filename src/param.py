@@ -1,6 +1,10 @@
 # Models to train
 MODELS = [
 	'XGBoost',
+    'RandomForest',
+    'LogisticRegression',
+    'KNN',
+    'DecisionTree',
 ]
 
 # Default hyperparameters used to initialize estimators (non-grid defaults)
@@ -13,7 +17,7 @@ HYPERPARAMETERS = {
 	},
 	'XGBoost': {
 		'n_estimators': 100,
-		'max_depth': 6,
+		'max_depth': 10,
 		'learning_rate': 0.1,
 		'eval_metric': 'logloss',
 		'random_state': 42
