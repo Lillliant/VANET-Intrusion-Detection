@@ -48,22 +48,26 @@ GRID_PARAMS = {
 	'RandomForest': {
 		'n_estimators': [100, 200],
 		'max_depth': [None, 10, 20]
+        'random_state': [42]
 	},
 	'XGBoost': {
 		'n_estimators': [50, 100],
 		'max_depth': [3, 6],
-		'learning_rate': [0.1, 0.01]
+		'learning_rate': [0.1, 0.01],
+        'random_state': [42]
 	},
 	'LogisticRegression': {
-		'C': [0.01, 0.1, 1.0, 10.0]
+		'C': [0.01, 0.1, 1.0, 10.0],
+        'random_state': [42]
 	},
     'KNN': {
         'n_neighbors': [3, 5, 7],
-        'weights': ['uniform', 'distance']
+        'weights': ['uniform', 'distance'],
     },
     'DecisionTree': {
         'max_depth': [None, 10, 20, 30],
-        'min_samples_split': [100, 500, 1000]
+        'min_samples_split': [100, 500, 1000],
+        'random_state': [42]
     },
 	'NaiveBayes': {
 		'var_smoothing': [1e-9, 1e-8, 1e-7]
