@@ -251,6 +251,7 @@ def main(data_path, output_dir='outputs'):
             results[model_name] = metrics
             # Save models immediately after they are done for partial results
             save_models({model_name: wrapped}, output_dir)
+            save_results(results, output_dir)
         except Exception as e:
             print(f"\nError training {model_name}: {str(e)}")
             import traceback
