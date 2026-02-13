@@ -40,6 +40,17 @@ def preprocess(X, y):
         y = np.where(y == param.DATA_PARAMS['class'], 1, 0) # Convert to binary labels
         print(f"Filtered dataset has {X.shape[0]} samples")
 
+    # Filter out the specified number of samples if defined in parameters, stratified by class to maintain distribution
+    if param.DATA_PARAMS['samples'] is not None and X.shape[0] > param.DATA_PARAMS['samples']:
+        print(f"Sampling {param.DATA_PARAMS['samples']} samples from the dataset...")
+        X, _, y, _ = train_test_split(
+            X, y,
+            train_size=param.DATA_PARAMS['samples'],
+            random_state=param.DATA_PARAMS['random_state'],
+            stratify=y
+        )
+        print(f"Sampled dataset has {X.shape[0]} samples")
+
     X_temp, X_test, y_temp, y_test = train_test_split(
         X, y,
         test_size=param.DATA_PARAMS['test_size'],
