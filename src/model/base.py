@@ -12,7 +12,7 @@ class Base:
         self.model = model
         self.trained = False
         self.training_time = None
-        self.evaluation_time = None
+        self.prediction_time = None
 
     def train(self, X_train, y_train, **kwargs):            
         start_time = time.perf_counter()
@@ -35,9 +35,11 @@ class Base:
         
         start_time = time.perf_counter()
         y_pred = self.predict(X_test)
-        self.evaluation_time = time.perf_counter() - start_time # evaluation time in seconds
-        print(f"{self.name} evaluation completed in {self.evaluation_time:.2f} seconds.")
-        metrics = {'training_time': self.training_time, 'evaluation_time': self.evaluation_time}
+        self.prediction_time = time.perf_counter() - start_time # evaluation time in seconds
+        print(f"{self.name} prediction completed in {self.prediction_time:.2f} seconds.")
+        metrics = {'training_time': self.training_time, 'prediction_time': self.prediction_time}
         for score_name, scorer in scorers.items():
+                start_time = time.perf_counter()
                 metrics[score_name] = scorer(y_test, y_pred)
+                print(f"{self.name} {score_name} calculated in {time.perf_counter() - start_time:.4f} seconds.")
         return metrics
