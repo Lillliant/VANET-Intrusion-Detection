@@ -176,11 +176,6 @@ def aggregate(results, output_dir):
     # Save the results and summary to JSON file
     summary = save_results(results, output_dir)
     print(f"\nResults saved to {os.path.join(output_dir, 'results.json')}")
-
-    # Copy param.py to the output directory for traceability
-    param_copy_path = os.path.join(output_dir, f"param.py")
-    shutil.copy('src/param.py', param_copy_path)
-    print(f"Copied param.py to {param_copy_path}")
     
     # Print comparison table
     print("\n" + "="*60)
@@ -198,6 +193,11 @@ def aggregate(results, output_dir):
     
     return summary
 
+def save_params(output_dir):
+    # Copy param.py to the output directory for traceability
+    param_copy_path = os.path.join(output_dir, f"param.py")
+    shutil.copy('src/param.py', param_copy_path)
+    print(f"Copied param.py to {param_copy_path}")
 
 def save_models(models, output_dir):
     models_dir = os.path.join(output_dir, 'models')
@@ -248,6 +248,7 @@ def main(data_path, output_dir='outputs'):
     # Load data and preprocess
     X, y = load(data_path)
     X_train, X_val, X_test, y_train, y_val, y_test = preprocess(X, y)
+    save_params(output_dir)
 
     results = {}
 
