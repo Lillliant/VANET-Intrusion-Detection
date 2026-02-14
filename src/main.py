@@ -7,10 +7,10 @@ import shutil
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split, GridSearchCV, PredefinedSplit
-from sklearn.metrics import confusion_matrix
 from model.base import Base
 import param
 import util.metrics
+from util.util import print_results
 
 def load(data_path):
     """Load dataset from CSV file."""
@@ -130,6 +130,7 @@ def train(model_name, X_train, y_train, X_val, y_val):
         return wrapped, gs
     else:
         # No grid provided: fit the estimator directly using default hyperparameters
+        # Does not use the validation set since no tuning is performed.
         print(f"\n{'='*60}")
         print(f"Tuning and training {model_name} with default parameters...")
         print(f"{'='*60}")
@@ -146,18 +147,8 @@ def validate(model_wrapper, X_test, y_test):
     scorers = util.metrics.get_scorers(param.METRICS, multiclass=param.DATA_PARAMS['class'] is None)
     metrics = model_wrapper.evaluate(X_test, y_test, scorers=scorers)
 
-    # Add confusion matrix separately
-    y_pred = model_wrapper.predict(X_test)
-    metrics['confusion_matrix'] = confusion_matrix(y_test, y_pred)
-
     print(f"\nResults for {model_wrapper.name}:")
-    for k, v in metrics.items():
-        if k == 'confusion_matrix':
-            print(f"\nConfusion Matrix:\n{v}")
-        elif isinstance(v, float) or isinstance(v, np.floating):
-            print(f"  {k}: {v:.4f}")
-        else:
-            print(f"  {k}: {v}")
+    print_results(metrics)
 
     return metrics
 
@@ -176,20 +167,18 @@ def aggregate(results, output_dir):
     # Save the results and summary to JSON file
     summary = save_results(results, output_dir)
     print(f"\nResults saved to {os.path.join(output_dir, 'results.json')}")
-    
+
     # Print comparison table
     print("\n" + "="*60)
     print("Model Comparison")
     print("="*60)
-    print(f"{'Model':<15} {'Accuracy':<12} {'Precision':<12} {'Recall':<12} {'F1-Score':<12}")
+    # Print the available metrics as columns in the table, except confusion matrix
+    print(f"{'Model':<15} " + " ".join([f"{metric:<12}" for metric in param.METRICS if metric != 'confusion_matrix']))
     print("-"*60)
     
     for model_name, metrics in results.items():
-        print(f"{model_name:<15} "
-              f"{metrics['accuracy']:<12.4f} "
-              f"{metrics['precision']:<12.4f} "
-              f"{metrics['recall']:<12.4f} "
-              f"{metrics['f1_score']:<12.4f}")
+        metric_values = " ".join([f"{metrics.get(metric, 'N/A'):<12.4f}" for metric in param.METRICS if metric != 'confusion_matrix'])
+        print(f"{model_name:<15} {metric_values}")
     
     return summary
 
