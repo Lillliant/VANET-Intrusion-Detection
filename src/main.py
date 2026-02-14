@@ -205,9 +205,11 @@ def save_models(models, output_dir):
     for model_name, model_instance in models.items():
         model_path = os.path.join(models_dir, f"{model_name}")
         # Save sklearn/xgboost objects via pickle
+        start_time = time.perf_counter()
         with open(f"{model_path}.pkl", 'wb') as f:
             pickle.dump(model_instance, f)
-        print(f"Saved {model_name} model to {model_path}.pkl")
+        elapsed_time = time.perf_counter() - start_time
+        print(f"Saved {model_name} model to {model_path}.pkl in {elapsed_time:.2f}s")
 
 def save_results(results, output_dir):
     # Create summary
