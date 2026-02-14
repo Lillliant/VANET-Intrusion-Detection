@@ -36,7 +36,7 @@ class Base:
         start_time = time.perf_counter()
         y_pred = self.predict(X_test)
         self.prediction_time = time.perf_counter() - start_time # evaluation time in seconds
-        print(f"{self.name} prediction completed in {self.prediction_time:.2f} seconds.")
+        print(f"{self.name} prediction completed in {self.prediction_time:.2f} seconds.\n")
         metrics = {'training_time': self.training_time, 'prediction_time': self.prediction_time}
         for score_name, scorer in scorers.items():
                 start_time = time.perf_counter()

@@ -20,13 +20,12 @@ def print_results(metrics):
     """
     Helper function to print the evaluation results in a readable format.
     """
-    print("\nEvaluation Results:")
     for metric, value in metrics.items():
         if metric in ['training_time', 'prediction_time']:
-            print(f"{metric}: {value:.4f} seconds")
+            print(f"  {metric}: {value:.4f} seconds")
         elif metric == 'confusion_matrix':
-            print(f"{metric}:\n{value}")
+            print(f"  {metric}:\n{value}")
         elif isinstance(value, (int, float)):
-            print(f"{metric}: {value:.4f}")
+            print(f"  {metric}: {value:.4f}")
         else:
-            print(f"{metric}: {value}")
+            print(f"  {metric}: {value}")
