@@ -74,7 +74,7 @@ def preprocess(X, y):
             raise RuntimeError("imbalanced-learn required for oversampling. Install it in the runtime: pip install imbalanced-learn") from e
 
         print("Applying SMOTE to training set (oversample=True)...")
-        sm = SMOTE(random_state=param.DATA_PARAMS.get('random_state', 42), n_jobs=-1)
+        sm = SMOTE(random_state=param.DATA_PARAMS.get('random_state', 42))
         X_train, y_train = sm.fit_resample(X_train, y_train)
         unique, counts = np.unique(y_train, return_counts=True)
         print("Post-SMOTE train class counts:", dict(zip(unique, counts)))
