@@ -81,7 +81,7 @@ GRID_PARAMS = {
 DATA_PARAMS = {
     'samples': None, # Use all samples; Otherwise, specify a number (e.g., 10000)
 	'test_size': 0.15, # Percentage based on samples as defined above
-    'class': 3, # Examine only one class; Otherwise, examine all classes (set to None)
+    'class': 8, # Examine only one class; Otherwise, examine all classes (set to None)
     'validation_size': 0.15,
 	'random_state': 42,
 	'oversample': True 
