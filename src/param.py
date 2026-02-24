@@ -82,6 +82,7 @@ DATA_PARAMS = {
     'class': 3, # Examine only one class; Otherwise, examine all classes (set to None)
     'validation_size': 0.15,
 	'random_state': 42,
+	'oversample': True 
 }
 
 # Metrics selection for evaluation and GridSearchCV
