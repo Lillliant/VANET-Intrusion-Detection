@@ -79,7 +79,7 @@ GRID_PARAMS = {
 
 # Data and CV configuration
 DATA_PARAMS = {
-    'samples': None, # Use all samples; Otherwise, specify a number (e.g., 10000)
+    'samples': 400000, # Use all samples; Otherwise, specify a number (e.g., 10000)
 	'test_size': 0.15, # Percentage based on samples as defined above
     'class': 8, # Examine only one class; Otherwise, examine all classes (set to None)
     'validation_size': 0.15,
