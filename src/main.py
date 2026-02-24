@@ -67,6 +67,35 @@ def preprocess(X, y):
     print(f"Train set: {X_train.shape[0]} samples")
     print(f"Validation set: {X_val.shape[0]} samples")
     print(f"Test set: {X_test.shape[0]} samples")
+        # --- optional: oversample training set (SMOTE) to fix imbalance ---
+    if param.DATA_PARAMS.get('oversample', False):
+        try:
+            from imblearn.over_sampling import SMOTE
+        except Exception as e:
+            raise RuntimeError("imbalanced-learn required for oversampling. pip install imbalanced-learn") from e
+
+        print("Applying SMOTE to training set (oversample=True)...")
+        sm = SMOTE(random_state=param.DATA_PARAMS.get('random_state', 42), n_jobs=-1)
+        X_train, y_train = sm.fit_resample(X_train, y_train)
+        # report new counts
+        unique, counts = np.unique(y_train, return_counts=True)
+        print("Post-SMOTE train class counts:", dict(zip(unique, counts)))
+
+    # --- optional: compute scale_pos_weight for XGBoost automatically ---
+    try:
+        if 'XGBoost' in param.HYPERPARAMETERS:
+            # only set if not already provided
+            if 'scale_pos_weight' not in param.HYPERPARAMETERS['XGBoost']:
+                unique, counts = np.unique(y_train, return_counts=True)
+                # counts could be [neg, pos] in binary. find negative and positive counts
+                if len(counts) == 2:
+                    neg = int(counts[0]) if unique[0] == 0 else int(counts[1])
+                    pos = int(counts[1]) if unique[1] == 1 else int(counts[0])
+                    if pos > 0:
+                        param.HYPERPARAMETERS['XGBoost']['scale_pos_weight'] = float(neg) / float(pos)
+                        print("Set XGBoost scale_pos_weight to", param.HYPERPARAMETERS['XGBoost']['scale_pos_weight'])
+    except Exception:
+        pass
     return X_train, X_val, X_test, y_train, y_val, y_test
 
 
@@ -75,12 +104,30 @@ def get_estimator(model_name):
     if model_name == 'RandomForest':
         from sklearn.ensemble import RandomForestClassifier
         return RandomForestClassifier(**hp)
-    if model_name == 'LogisticRegression':
+       if model_name == 'LogisticRegression':
+        from sklearn.pipeline import Pipeline
+        from sklearn.preprocessing import StandardScaler
         from sklearn.linear_model import LogisticRegression
-        return LogisticRegression(**hp)
+        # ensure LR uses class_weight balanced unless user explicitly set something
+        hp_lr = dict(hp)  # copy
+        if 'class_weight' not in hp_lr:
+            hp_lr['class_weight'] = 'balanced'
+        # use saga solver which supports class_weight for large problems
+        if 'solver' not in hp_lr:
+            hp_lr['solver'] = 'saga'
+        if 'max_iter' not in hp_lr:
+            hp_lr['max_iter'] = 2000
+        return Pipeline([('scaler', StandardScaler()), ('clf', LogisticRegression(**hp_lr))])
+
     if model_name == 'KNN':
+        from sklearn.pipeline import Pipeline
+        from sklearn.preprocessing import StandardScaler
         from sklearn.neighbors import KNeighborsClassifier
-        return KNeighborsClassifier(**hp)
+        hp_knn = dict(hp)
+        # set distance weighting for better minority detection unless set
+        if 'weights' not in hp_knn:
+            hp_knn['weights'] = 'distance'
+        return Pipeline([('scaler', StandardScaler()), ('clf', KNeighborsClassifier(**hp_knn))])
     if model_name == 'DecisionTree':
         from sklearn.tree import DecisionTreeClassifier
         return DecisionTreeClassifier(**hp)
