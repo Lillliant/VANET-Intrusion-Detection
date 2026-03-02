@@ -13,8 +13,7 @@ HYPERPARAMETERS = {
 		'n_estimators': 100,
 		'max_depth': 10,
 		'random_state': 42,
-		'n_jobs': -1,
-		 'class_weight': 'balanced'
+		'n_jobs': -1
 	},
 	'XGBoost': {
 		'n_estimators': 100,
@@ -39,8 +38,7 @@ HYPERPARAMETERS = {
     'DecisionTree': {
         'max_depth': 10,
         'min_samples_split': 500,
-        'random_state': 42,
-		 'class_weight': 'balanced'
+        'random_state': 42
     }
 }
 
@@ -79,12 +77,11 @@ GRID_PARAMS = {
 
 # Data and CV configuration
 DATA_PARAMS = {
-    'samples': 400000, # Use all samples; Otherwise, specify a number (e.g., 10000)
+    'samples': None, # Use all samples; Otherwise, specify a number (e.g., 10000)
 	'test_size': 0.15, # Percentage based on samples as defined above
-    'class': 8, # Examine only one class; Otherwise, examine all classes (set to None)
+    'class': 15, # Examine only one class; Otherwise, examine all classes (set to None)
     'validation_size': 0.15,
 	'random_state': 42,
-	'oversample': True 
 }
 
 # Metrics selection for evaluation and GridSearchCV
@@ -94,4 +91,3 @@ REFIT_METRIC = METRICS[0]
 
 # Misc
 RANDOM_STATE = 42
-
