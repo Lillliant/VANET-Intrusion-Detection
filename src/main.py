@@ -295,4 +295,3 @@ if __name__ == "__main__":
 
     # Run the pipeline
     main(args.data_path, output_dir)
-
