@@ -246,6 +246,23 @@ def save_models(models, output_dir):
         elapsed_time = time.perf_counter() - start_time
         print(f"Saved {model_name} model to {model_path}.pkl in {elapsed_time:.2f}s")
 
+def save_datasets(output_dir, X_train, y_train, X_val, y_val):
+    datasets_dir = os.path.join(output_dir, 'datasets')
+    os.makedirs(datasets_dir, exist_ok=True)
+
+    dataset_splits = {
+        'train': {'X': X_train, 'y': y_train},
+        'validation': {'X': X_val, 'y': y_val},
+    }
+
+    for split_name, dataset in dataset_splits.items():
+        dataset_path = os.path.join(datasets_dir, f"{split_name}.pkl")
+        start_time = time.perf_counter()
+        with open(dataset_path, 'wb') as f:
+            pickle.dump(dataset, f)
+        elapsed_time = time.perf_counter() - start_time
+        print(f"Saved {split_name} dataset to {dataset_path} in {elapsed_time:.2f}s")
+
 def save_results(results, output_dir):
     # Create summary
     summary = {
@@ -287,6 +304,7 @@ def main(data_path, output_dir='outputs'):
     X, y = load(data_path)
     X_train, X_val, X_test, y_train, y_val, y_test = preprocess(X, y)
     save_params(output_dir)
+    save_datasets(output_dir, X_train, y_train, X_val, y_val)
 
     results = {}
 
