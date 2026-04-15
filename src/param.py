@@ -91,3 +91,27 @@ REFIT_METRIC = METRICS[0]
 
 # Misc
 RANDOM_STATE = 42
+
+# Resampling configuration for handling class imbalance. Applied to the training split only.
+RESAMPLING_PARAMS = {
+    'method': None, # Set to None for no sampling; Otherwise, specify a method (e.g., 'smote', 'tomek_links', 'neighbourhood_cleaning_rule', 'smote_tomek')
+    'tomek_links': {
+        'sampling_strategy': 'auto',
+    },
+    'neighbourhood_cleaning_rule': {
+        'sampling_strategy': 'auto',
+        'n_neighbors': 3,
+        'threshold_cleaning': 0.5,
+    },
+    'smote': {
+        'sampling_strategy': 'auto',
+        'k_neighbors': 5,
+        'random_state': RANDOM_STATE,
+    },
+    'smote_tomek': {
+        'sampling_strategy': 'auto',
+        'random_state': RANDOM_STATE,
+        'smote_k_neighbors': 5,
+        'tomek_sampling_strategy': 'auto',
+    },
+}

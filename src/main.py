@@ -7,6 +7,9 @@ import shutil
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split, GridSearchCV, PredefinedSplit
+from imblearn.combine import SMOTETomek
+from imblearn.over_sampling import SMOTE
+from imblearn.under_sampling import NeighbourhoodCleaningRule, TomekLinks
 from model.base import Base
 import param
 import util.metrics
@@ -67,7 +70,50 @@ def preprocess(X, y):
     print(f"Train set: {X_train.shape[0]} samples")
     print(f"Validation set: {X_val.shape[0]} samples")
     print(f"Test set: {X_test.shape[0]} samples")
+
+    # Apply resampling and additional preprocessing steps
+    X_train, y_train = apply_resampling(X_train, y_train)
+
     return X_train, X_val, X_test, y_train, y_val, y_test
+
+
+def build_resampler():
+    """Build the resampler based on specified parameters."""
+    method = param.RESAMPLING_PARAMS.get('method')
+    if method is None:
+        print("No resampling method configured. Using the original training split")
+        return None
+    elif method == 'tomek_links':
+        sampler = TomekLinks(**param.RESAMPLING_PARAMS.get('tomek_links', {}))
+    elif method == 'neighbourhood_cleaning_rule':
+        sampler = NeighbourhoodCleaningRule(**param.RESAMPLING_PARAMS.get('neighbourhood_cleaning_rule', {}))
+    elif method == 'smote':
+        sampler = SMOTE(**param.RESAMPLING_PARAMS.get('smote', {}))
+    elif method == 'smote_tomek':
+        sampler = SMOTETomek(**param.RESAMPLING_PARAMS.get('smote_tomek', {}))
+    else:
+        raise ValueError(f"Unknown resampling method: {method}")
+    print(f"Configured resampler with method {method}")
+    return sampler
+
+
+def apply_resampling(X_train, y_train):
+    sampler = build_resampler()
+    if sampler is None:
+        print("No resampling method configured. Using the original training split.")
+        return X_train, y_train
+    else:
+        print("\nApplying resampling to the training split...")
+        y_train_dist = np.unique(y_train, return_counts=True)
+        print("Original training class distribution:")
+        for cls, count in zip(y_train_dist[0], y_train_dist[1]):
+            print(f"  Class {cls}: {count} samples")
+        # Apply resampling to the training split
+        X_resampled, y_resampled = sampler.fit_resample(X_train, y_train)
+        print("Resampled training class distribution:")
+        for cls, count in zip(y_resampled, np.unique(y_resampled, return_counts=True)[1]):
+            print(f"  Class {cls}: {count} samples")
+    return X_resampled, y_resampled
 
 
 def get_estimator(model_name):
@@ -206,6 +252,7 @@ def save_results(results, output_dir):
         'timestamp': datetime.now().isoformat(),
         'models': list(results.keys()),
         'class': param.DATA_PARAMS['class'],
+        'resampling_method': param.RESAMPLING_PARAMS.get('method', 'none'),
         'hyperparameters': {model: param.HYPERPARAMETERS.get(model, {}) for model in results.keys()},
         'results': {}
     }
