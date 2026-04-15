@@ -104,14 +104,15 @@ def apply_resampling(X_train, y_train):
         return X_train, y_train
     else:
         print("\nApplying resampling to the training split...")
-        y_train_dist = np.unique(y_train, return_counts=True)
         print("Original training class distribution:")
+        y_train_dist = np.unique(y_train, return_counts=True)
         for cls, count in zip(y_train_dist[0], y_train_dist[1]):
             print(f"  Class {cls}: {count} samples")
         # Apply resampling to the training split
         X_resampled, y_resampled = sampler.fit_resample(X_train, y_train)
         print("Resampled training class distribution:")
-        for cls, count in zip(y_resampled, np.unique(y_resampled, return_counts=True)[1]):
+        y_train_dist = np.unique(y_resampled, return_counts=True)
+        for cls, count in zip(y_train_dist[0], y_train_dist[1]):
             print(f"  Class {cls}: {count} samples")
     return X_resampled, y_resampled
 
