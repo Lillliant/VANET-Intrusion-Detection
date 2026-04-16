@@ -1,4 +1,4 @@
-"""Preprocess the data into pickle files for training and testing."""
+"""Preprocess the data into pickle files for training and testing. This is used for the binary classification aspect."""
 from main import load, preprocess
 import os
 import argparse
@@ -11,7 +11,7 @@ Configurations
 """
 methods = ['smote'] #'tomek_links', 'neighbourhood_cleaning_rule', 'smote_tomek', 'smote'
 classes = [i for i in range(1, 20)] # 0-4 for all classes; Otherwise, specify a class (e.g., 4)
-statistics = {}
+statistics = {m: {} for m in methods}
 
 
 # Get the path to the dataset from the command line arguments
@@ -28,18 +28,24 @@ print("Dataset loaded successfully.")
 for c in classes:
     for m in methods:
         X_train, X_val, X_test, y_train, y_val, y_test = preprocess(X, y, y_class=c, resamp_method=m)
-        statistics[(c, m)] = {
-            "train": {
-                "positive": sum(y_train),
-                "negative": len(y_train) - sum(y_train)
+        statistics[m][f'class_{c}'] = {
+            'train': {
+                'X': X_train.shape,
+                'y': y_train.shape,
+                'positive': int(sum(y_train == 1)),
+                'negative': int(sum(y_train == 0)),
             },
-            "val": {
-                "positive": sum(y_val),
-                "negative": len(y_val) - sum(y_val)
+            'val': {
+                'X': X_val.shape if X_val is not None else None,
+                'y': y_val.shape if y_val is not None else None,
+                'positive': int(sum(y_val == 1)) if y_val is not None else None,
+                'negative': int(sum(y_val == 0)) if y_val is not None else None,
             },
-            "test": {
-                "positive": sum(y_test),
-                "negative": len(y_test) - sum(y_test)
+            'test': {
+                'X': X_test.shape,
+                'y': y_test.shape,
+                'positive': int(sum(y_test == 1)),
+                'negative': int(sum(y_test == 0))
             }
         }
         print(f"Preprocessing completed for class {c} with resampling method {m}.")
@@ -58,5 +64,5 @@ for c in classes:
     
 # Save the statistics as a json file in the output path
 with open(f"{destination_path}/statistics.json", "w") as f:
-    json.dump(statistics, f, indent=4)
+    json.dump(statistics, f, indent=2)
 print("Statistics saved successfully.")
