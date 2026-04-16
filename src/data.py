@@ -21,7 +21,7 @@ for c in classes:
         4. organize the pickle files into folders based on the resampling method
         """
         X, y = load(data_path)
-        X_train, X_val, X_test, y_train, y_val, y_test = preprocess(X, y)
+        X_train, X_val, X_test, y_train, y_val, y_test = preprocess(X, y, y_class=c)
         X_test_list.append(X_test)
         y_test_list.append(y_test)
 
