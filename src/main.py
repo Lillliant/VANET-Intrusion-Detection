@@ -29,26 +29,26 @@ def load(data_path):
     return X, y
 
 
-def preprocess(X, y):
+def preprocess(X, y, y_class=None, samples=None):
     """Create train/validation/test split."""
     print("Preprocessing data...")
 
     # Filter out the desired class if specified in parameters
     # In this case, we will perform binary classification
-    if param.DATA_PARAMS['class'] is not None:
-        print(f"Filtering to examine only class {param.DATA_PARAMS['class']}...")
-        mask = (y == param.DATA_PARAMS['class']) | (y == 0)  # Keep the specified class and the normal class (0)
+    if y_class is not None:
+        print(f"Filtering to examine only class {y_class}...")
+        mask = (y == y_class) | (y == 0)  # Keep the specified class and the normal class (0)
         X = X[mask]
         y = y[mask]
-        y = np.where(y == param.DATA_PARAMS['class'], 1, 0) # Convert to binary labels
+        y = np.where(y == y_class, 1, 0) # Convert to binary labels
         print(f"Filtered dataset has {X.shape[0]} samples")
 
     # Filter out the specified number of samples if defined in parameters, stratified by class to maintain distribution
-    if param.DATA_PARAMS['samples'] is not None and X.shape[0] > param.DATA_PARAMS['samples']:
-        print(f"Sampling {param.DATA_PARAMS['samples']} samples from the dataset...")
+    if samples is not None and X.shape[0] > samples:
+        print(f"Sampling {samples} samples from the dataset...")
         X, _, y, _ = train_test_split(
             X, y,
-            train_size=param.DATA_PARAMS['samples'],
+            train_size=samples,
             random_state=param.DATA_PARAMS['random_state'],
             stratify=y
         )
@@ -303,7 +303,9 @@ def main(data_path, output_dir='outputs'):
     
     # Load data and preprocess
     X, y = load(data_path)
-    X_train, X_val, X_test, y_train, y_val, y_test = preprocess(X, y)
+    y_class = param.DATA_PARAMS['class'] if 'class' in param.DATA_PARAMS else None
+    samples = param.DATA_PARAMS['samples'] if 'samples' in param.DATA_PARAMS else None
+    X_train, X_val, X_test, y_train, y_val, y_test = preprocess(X, y, y_class, samples)
     save_params(output_dir)
     save_datasets(output_dir, X_train, y_train, X_val, y_val)
 
