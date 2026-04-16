@@ -29,7 +29,7 @@ def load(data_path):
     return X, y
 
 
-def preprocess(X, y, y_class=None, samples=None):
+def preprocess(X, y, y_class=None, samples=None, resamp_method=None):
     """Create train/validation/test split."""
     print("Preprocessing data...")
 
@@ -72,16 +72,14 @@ def preprocess(X, y, y_class=None, samples=None):
     print(f"Test set: {X_test.shape[0]} samples")
 
     # Apply resampling and additional preprocessing steps
-    X_train, y_train = apply_resampling(X_train, y_train)
+    X_train, y_train = apply_resampling(X_train, y_train, resamp_method)
 
     return X_train, X_val, X_test, y_train, y_val, y_test
 
 
-def build_resampler():
+def build_resampler(method=None):
     """Build the resampler based on specified parameters."""
-    method = param.RESAMPLING_PARAMS.get('method')
     if method is None:
-        print("No resampling method configured. Using the original training split")
         return None
     elif method == 'tomek_links':
         sampler = TomekLinks(**param.RESAMPLING_PARAMS.get('tomek_links', {}))
@@ -97,8 +95,8 @@ def build_resampler():
     return sampler
 
 
-def apply_resampling(X_train, y_train):
-    sampler = build_resampler()
+def apply_resampling(X_train, y_train, method=None):
+    sampler = build_resampler(method)
     if sampler is None:
         print("No resampling method configured. Using the original training split.")
         return X_train, y_train
@@ -303,9 +301,10 @@ def main(data_path, output_dir='outputs'):
     
     # Load data and preprocess
     X, y = load(data_path)
-    y_class = param.DATA_PARAMS['class'] if 'class' in param.DATA_PARAMS else None
-    samples = param.DATA_PARAMS['samples'] if 'samples' in param.DATA_PARAMS else None
-    X_train, X_val, X_test, y_train, y_val, y_test = preprocess(X, y, y_class, samples)
+    y_class = param.DATA_PARAMS.get('class', None) if hasattr(param, 'DATA_PARAMS') else None
+    samples = param.DATA_PARAMS.get('samples', None) if hasattr(param, 'DATA_PARAMS') else None
+    resamp_method = param.RESAMPLING_PARAMS.get('method') if hasattr(param, 'RESAMPLING_PARAMS') else None
+    X_train, X_val, X_test, y_train, y_val, y_test = preprocess(X, y, y_class, samples, resamp_method)
     save_params(output_dir)
     save_datasets(output_dir, X_train, y_train, X_val, y_val)
 
