@@ -8,7 +8,7 @@ y_test_list = []
 """
 Load dataset
 """
-data_path = "../data/mixalldata_clean.csv"
+data_path = "data/mixalldata_clean.csv"
 df = load(data_path)
 print("Dataset loaded successfully.")
 
