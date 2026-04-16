@@ -97,6 +97,7 @@ RESAMPLING_PARAMS = {
     'method': None, # Set to None for no sampling; Otherwise, specify a method (e.g., 'smote', 'tomek_links', 'neighbourhood_cleaning_rule', 'smote_tomek')
     'tomek_links': {
         'sampling_strategy': 'auto',
+        'n_jobs': -1,
     },
     'neighbourhood_cleaning_rule': {
         'sampling_strategy': 'auto',
