@@ -268,12 +268,12 @@ def save_models(models, output_dir):
         elapsed_time = time.perf_counter() - start_time
         print(f"Saved {model_name} model to {model_path}.pkl in {elapsed_time:.2f}s")
 
-def save_results(results, output_dir):
+def save_results(y_class, results, output_dir):
     # Create summary
     summary = {
         'timestamp': datetime.now().isoformat(),
         'models': list(results.keys()),
-        'class': param.DATA_PARAMS['class'],
+        'class': y_class,
         'resampling_method': param.RESAMPLING_PARAMS.get('method', 'none'),
         'hyperparameters': {model: param.HYPERPARAMETERS.get(model, {}) for model in results.keys()},
         'results': {}
@@ -314,11 +314,10 @@ def main(data_path, output_dir='outputs', pickle_path=None, class_to_examine=Non
     
     # Load data and preprocess
     if pickle_path is not None:
-        print(f"Loading preprocessed data from {pickle_path}...")
-        
         pickle_folder = os.path.join(pickle_path, resamp_method if resamp_method else 'original')
         if y_class is not None:
             pickle_folder = os.path.join(pickle_folder, f"class_{y_class}")
+        print(f"Loading preprocessed data from {pickle_folder}...")
 
         train_pickle = os.path.join(pickle_folder, 'train.pkl')
         val_pickle = os.path.join(pickle_folder, 'val.pkl')
@@ -347,7 +346,7 @@ def main(data_path, output_dir='outputs', pickle_path=None, class_to_examine=Non
             results[model_name] = metrics
             # Save models immediately after they are done for partial results
             save_models({model_name: wrapped}, output_dir)
-            save_results(results, output_dir)
+            save_results(y_class, results, output_dir)
         except Exception as e:
             print(f"\nError training {model_name}: {str(e)}")
             import traceback
