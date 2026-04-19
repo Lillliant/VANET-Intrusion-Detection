@@ -38,7 +38,7 @@ def load_data_pickle(file_path):
     try:
         with open(file_path, 'rb') as f:
             data = pickle.load(f)
-        return data['X'], data['y']
+        return data[0], data[1]  # Assuming the pickle file contains a tuple (X, y)
     except FileNotFoundError:
         print(f"Pickle file not found: {file_path}")
         return None, None
