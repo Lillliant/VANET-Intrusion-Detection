@@ -81,11 +81,10 @@ def preprocess(X, y, y_class=None, samples=None, resamp_method=None):
 def build_resampler(method=None):
     """Build the resampler based on specified parameters."""
     steps = []
-    pre_undersample = param.RESAMPLING_PARAMS.get('pre_undersample', {}) if hasattr(param, 'RESAMPLING_PARAMS') else {}
-
-    if pre_undersample.get('pre-undersample', False):
+    pre_undersample = param.RESAMPLING_PARAMS.get('pre-undersample', False)
+    if pre_undersample == True:
         print("Pre-undersampling enabled. Adding RandomUnderSampler to the pipeline...")
-        steps.append(('pre_undersample', RandomUnderSampler(**pre_undersample.get('random_under_sample', {}))))
+        steps.append(('pre_undersample', RandomUnderSampler(**param.RESAMPLING_PARAMS.get('random_under_sample', {}))))
     else:
         print("No pre-undersampling configured.")
 
@@ -107,7 +106,7 @@ def build_resampler(method=None):
 
     if steps:
         steps.append(('main_sampler', sampler))
-        pipeline = Pipeline(steps=steps)
+        pipeline = Pipeline(steps=steps, verbose=True)
         return pipeline
     return sampler
 
@@ -192,11 +191,13 @@ def train(model_name, X_train, y_train, X_val, y_val):
         return wrapped, gs
     else:
         # No grid provided: fit the estimator directly using default hyperparameters
-        # Does not use the validation set since no tuning is performed.
+        # Append the validation set to the training set because there is no tuning
         print(f"\n{'='*60}")
         print(f"Tuning and training {model_name} with default parameters...")
         print(f"{'='*60}")
         hyperparams = param.HYPERPARAMETERS.get(model_name, {})
+        X_train = np.concatenate([X_train, X_val])
+        y_train = np.concatenate([y_train, y_val])
         wrapped = Base(model_name, estimator)
         wrapped.train(X_train, y_train, **hyperparams)
         return wrapped, None
