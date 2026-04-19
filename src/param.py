@@ -79,7 +79,8 @@ GRID_PARAMS = {
 DATA_PARAMS = {
     'samples': None, # Use all samples; Otherwise, specify a number (e.g., 10000)
 	'test_size': 0.15, # Percentage based on samples as defined above
-    'class': 4, # Examine only one class; Otherwise, examine all classes (set to None)
+    'binary': True, # Whether to treat the problem as binary classification or multi-class classification
+    'class': [1, 2, 3, 4], # Number of classes to run individually, in the case of binary classification. If it is multi-class, this is the the classes to use at a single run.
     'validation_size': 0.15,
 	'random_state': 42,
 }

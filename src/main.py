@@ -38,7 +38,7 @@ def preprocess(X, y, y_class=None, samples=None, resamp_method=None):
     # In this case, we will perform binary classification
     if y_class is not None:
         print(f"Filtering to examine only class {y_class}...")
-        mask = (y == y_class) | (y == 0)  # Keep the specified class and the normal class (0)
+        mask = (y == y_class) | (y == 0)  # Keep the specified class and the normal class (0) TODO: Add processing for multi-class if needed in the future
         X = X[mask]
         y = y[mask]
         y = np.where(y == y_class, 1, 0) # Convert to binary labels
@@ -297,7 +297,7 @@ def save_results(results, output_dir):
     with open(summary_path, 'w') as f:
         json.dump(summary, f, indent=2)
 
-def main(data_path, output_dir='outputs', pickle_path=None):
+def main(data_path, output_dir='outputs', pickle_path=None, class_to_examine=None):
     print("="*60)
     print("Intrusion Detection ML Pipeline")
     print("="*60)
@@ -306,7 +306,10 @@ def main(data_path, output_dir='outputs', pickle_path=None):
     print("="*60)
     
     resamp_method = param.RESAMPLING_PARAMS.get('method') if hasattr(param, 'RESAMPLING_PARAMS') else None
-    y_class = param.DATA_PARAMS.get('class', None) if hasattr(param, 'DATA_PARAMS') else None
+    if param.DATA_PARAMS.get('binary', True): # Defaults to binary classification
+        y_class = class_to_examine
+    else:
+        y_class = param.DATA_PARAMS.get('class', None)
     X_train, y_train, X_val, y_val, X_test, y_test = None, None, None, None, None, None
     
     # Load data and preprocess
@@ -382,4 +385,13 @@ if __name__ == "__main__":
     os.makedirs(output_dir, exist_ok=True)
 
     # Run the pipeline
-    main(args.data_path, output_dir, args.pickle_path)
+    if param.DATA_PARAMS.get('binary', True):
+        print("Running in binary classification mode")
+        classes = param.DATA_PARAMS.get('class', None)
+        if classes is not None:
+            for c in classes:
+                os.makedirs(os.path.join(output_dir, f"class_{c}"), exist_ok=True)
+                main(args.data_path, os.path.join(output_dir, f"class_{c}"), args.pickle_path, c)
+    else:
+        print("Running in multiclass classification mode")
+        main(args.data_path, output_dir, args.pickle_path)
