@@ -81,18 +81,18 @@ def preprocess(X, y, y_class=None, samples=None, resamp_method=None):
 def build_resampler(method=None):
     """Build the resampler based on specified parameters."""
     steps = []
-    pre_undersample = param.RESAMPLING_PARAMS.get('pre_undersample', {})
+    pre_undersample = param.RESAMPLING_PARAMS.get('pre_undersample', {}) if hasattr(param, 'RESAMPLING_PARAMS') else {}
 
-    if pre_undersample.get('enabled', False):
-        undersampler_kwargs = {
-            'sampling_strategy': pre_undersample.get('sampling_strategy', 0.5),
-            'random_state': pre_undersample.get('random_state', param.RANDOM_STATE),
-        }
-        steps.append(('pre_undersample', RandomUnderSampler(**undersampler_kwargs)))
-        print(f"Configured pre-undersampler with settings {undersampler_kwargs}")
+    if pre_undersample.get('pre-undersample', False):
+        print("Pre-undersampling enabled. Adding RandomUnderSampler to the pipeline...")
+        steps.append(('pre_undersample', RandomUnderSampler(**pre_undersample.get('random_under_sample', {}))))
+    else:
+        print("No pre-undersampling configured.")
 
     if method is None:
         return None
+    elif method == 'random_under_sample':
+        sampler = RandomUnderSampler(**param.RESAMPLING_PARAMS.get('random_under_sample', {}))
     elif method == 'tomek_links':
         sampler = TomekLinks(**param.RESAMPLING_PARAMS.get('tomek_links', {}))
     elif method == 'neighbourhood_cleaning_rule':
@@ -105,9 +105,10 @@ def build_resampler(method=None):
         raise ValueError(f"Unknown resampling method: {method}")
     print(f"Configured resampler with method {method}")
 
-    if steps and method is not 'smote':
-        steps.append(('resampler', sampler))
-        return Pipeline(steps=steps)
+    if steps:
+        steps.append(('main_sampler', sampler))
+        pipeline = Pipeline(steps=steps)
+        return pipeline
     return sampler
 
 
