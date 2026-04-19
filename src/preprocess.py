@@ -9,7 +9,7 @@ import json
 """
 Configurations
 """
-methods = ['smote'] #'tomek_links', 'neighbourhood_cleaning_rule', 'smote_tomek', 'smote'
+methods = ['smote_tomek'] #'tomek_links', 'neighbourhood_cleaning_rule', 'smote_tomek', 'smote', 'random_under_sample'
 classes = [i for i in range(1, 20)] # 0-4 for all classes; Otherwise, specify a class (e.g., 4)
 statistics = {m: {} for m in methods}
 
