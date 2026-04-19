@@ -316,10 +316,13 @@ def main(data_path, output_dir='outputs', pickle_path=None, class_to_examine=Non
     if pickle_path is not None:
         print(f"Loading preprocessed data from {pickle_path}...")
         
-        pickle_folder = os.path.join(pickle_path, resamp_method if resamp_method else 'unresampled')
+        pickle_folder = os.path.join(pickle_path, resamp_method if resamp_method else 'original')
+        if y_class is not None:
+            pickle_folder = os.path.join(pickle_folder, f"class_{y_class}")
+
         train_pickle = os.path.join(pickle_folder, 'train.pkl')
         val_pickle = os.path.join(pickle_folder, 'val.pkl')
-        test_pickle = os.path.join(pickle_path, 'test.pkl')
+        test_pickle = os.path.join(pickle_folder, 'test.pkl')
         X_train, y_train = load_data_pickle(train_pickle)
         X_val, y_val = load_data_pickle(val_pickle)
         X_test, y_test = load_data_pickle(test_pickle)
