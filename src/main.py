@@ -221,7 +221,7 @@ def validate(model_wrapper, X_test, y_test):
     return metrics
 
 
-def aggregate(results, output_dir):
+def aggregate(y_class, results, output_dir):
     """
     Aggregate and save final statistics
     """
@@ -233,7 +233,7 @@ def aggregate(results, output_dir):
     os.makedirs(output_dir, exist_ok=True)
     
     # Save the results and summary to JSON file
-    summary = save_results(results, output_dir)
+    summary = save_results(y_class, results, output_dir)
     print(f"\nResults saved to {os.path.join(output_dir, 'results.json')}")
 
     # Print comparison table
@@ -353,7 +353,7 @@ def main(data_path, output_dir='outputs', pickle_path=None, class_to_examine=Non
             traceback.print_exc()
 
     if results:
-        aggregate(results, output_dir)
+        aggregate(y_class, results, output_dir)
     else:
         print("\nNo models were successfully trained.")
     
