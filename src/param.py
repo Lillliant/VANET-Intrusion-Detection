@@ -95,6 +95,11 @@ RANDOM_STATE = 42
 # Resampling configuration for handling class imbalance. Applied to the training split only.
 RESAMPLING_PARAMS = {
     'method': 'smote_tomek', # Set to None for no sampling; Otherwise, specify a method (e.g., 'smote', 'tomek_links', 'neighbourhood_cleaning_rule', 'smote_tomek')
+    'pre_undersample': {
+        'enabled': True,
+        'sampling_strategy': 0.5,
+        'random_state': RANDOM_STATE,
+    },
     'tomek_links': {
         'sampling_strategy': 'auto',
         'n_jobs': -1,

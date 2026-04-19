@@ -9,7 +9,8 @@ import numpy as np
 from sklearn.model_selection import train_test_split, GridSearchCV, PredefinedSplit
 from imblearn.combine import SMOTETomek
 from imblearn.over_sampling import SMOTE
-from imblearn.under_sampling import NeighbourhoodCleaningRule, TomekLinks
+from imblearn.pipeline import Pipeline
+from imblearn.under_sampling import NeighbourhoodCleaningRule, RandomUnderSampler, TomekLinks
 from model.base import Base
 import param
 import util.metrics
@@ -79,6 +80,17 @@ def preprocess(X, y, y_class=None, samples=None, resamp_method=None):
 
 def build_resampler(method=None):
     """Build the resampler based on specified parameters."""
+    steps = []
+    pre_undersample = param.RESAMPLING_PARAMS.get('pre_undersample', {})
+
+    if pre_undersample.get('enabled', False):
+        undersampler_kwargs = {
+            'sampling_strategy': pre_undersample.get('sampling_strategy', 0.5),
+            'random_state': pre_undersample.get('random_state', param.RANDOM_STATE),
+        }
+        steps.append(('pre_undersample', RandomUnderSampler(**undersampler_kwargs)))
+        print(f"Configured pre-undersampler with settings {undersampler_kwargs}")
+
     if method is None:
         return None
     elif method == 'tomek_links':
@@ -92,6 +104,10 @@ def build_resampler(method=None):
     else:
         raise ValueError(f"Unknown resampling method: {method}")
     print(f"Configured resampler with method {method}")
+
+    if steps and method is not 'smote':
+        steps.append(('resampler', sampler))
+        return Pipeline(steps=steps)
     return sampler
 
 
