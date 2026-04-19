@@ -89,16 +89,13 @@ DATA_PARAMS = {
 METRICS = ['f1_score', 'precision', 'recall', 'accuracy', 'confusion_matrix']
 REFIT_METRIC = METRICS[0]
 
-# Misc
-RANDOM_STATE = 42
-
 # Resampling configuration for handling class imbalance. Applied to the training split only.
 RESAMPLING_PARAMS = {
     'method': None, # Set to None for no sampling; Otherwise, specify a method (e.g., 'smote', 'tomek_links', 'neighbourhood_cleaning_rule', 'smote_tomek')
     'pre-undersample': True, # Whether to apply random undersampling before the main resampling method (e.g., SMOTE) to reduce the number of samples and speed up processing.
     'random_under_sample': {
-        'sampling_strategy': 0.5,
-        'random_state': RANDOM_STATE,
+        'sampling_strategy': 0.3,
+        'random_state': DATA_PARAMS['random_state'],
     },
     'tomek_links': {
         'sampling_strategy': 'auto',
@@ -112,11 +109,11 @@ RESAMPLING_PARAMS = {
     'smote': {
         'sampling_strategy': 'auto',
         'k_neighbors': 5,
-        'random_state': RANDOM_STATE,
+        'random_state': DATA_PARAMS['random_state'],
     },
     'smote_tomek': { # Other parameters include the specific smote and tomek objects
         'sampling_strategy': 'auto',
-        'random_state': RANDOM_STATE,
+        'random_state': DATA_PARAMS['random_state'],
         'n_jobs': -1,
     },
 }

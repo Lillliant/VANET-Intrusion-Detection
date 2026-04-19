@@ -82,7 +82,7 @@ def build_resampler(method=None):
     """Build the resampler based on specified parameters."""
     steps = []
     pre_undersample = param.RESAMPLING_PARAMS.get('pre-undersample', False)
-    if pre_undersample == True:
+    if pre_undersample == True and method is not None:
         print("Pre-undersampling enabled. Adding RandomUnderSampler to the pipeline...")
         steps.append(('pre_undersample', RandomUnderSampler(**param.RESAMPLING_PARAMS.get('random_under_sample', {}))))
     else:
