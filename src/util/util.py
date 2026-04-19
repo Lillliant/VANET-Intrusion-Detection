@@ -29,3 +29,16 @@ def print_results(metrics):
             print(f"  {metric}: {value:.4f}")
         else:
             print(f"  {metric}: {value}")
+
+def load_data_pickle(file_path):
+    """
+    Load preprocessed data from a pickle file.
+    """
+    import pickle
+    try:
+        with open(file_path, 'rb') as f:
+            data = pickle.load(f)
+        return data['X'], data['y']
+    except FileNotFoundError:
+        print(f"Pickle file not found: {file_path}")
+        return None, None

@@ -13,7 +13,7 @@ from imblearn.under_sampling import NeighbourhoodCleaningRule, TomekLinks
 from model.base import Base
 import param
 import util.metrics
-from util.util import print_results
+from util.util import print_results, load_data_pickle
 
 def load(data_path):
     """Load dataset from CSV file."""
@@ -245,23 +245,6 @@ def save_models(models, output_dir):
         elapsed_time = time.perf_counter() - start_time
         print(f"Saved {model_name} model to {model_path}.pkl in {elapsed_time:.2f}s")
 
-def save_datasets(output_dir, X_train, y_train, X_val, y_val):
-    datasets_dir = os.path.join(output_dir, 'datasets')
-    os.makedirs(datasets_dir, exist_ok=True)
-
-    dataset_splits = {
-        'train': {'X': X_train, 'y': y_train},
-        'validation': {'X': X_val, 'y': y_val},
-    }
-
-    for split_name, dataset in dataset_splits.items():
-        dataset_path = os.path.join(datasets_dir, f"{split_name}.pkl")
-        start_time = time.perf_counter()
-        with open(dataset_path, 'wb') as f:
-            pickle.dump(dataset, f)
-        elapsed_time = time.perf_counter() - start_time
-        print(f"Saved {split_name} dataset to {dataset_path} in {elapsed_time:.2f}s")
-
 def save_results(results, output_dir):
     # Create summary
     summary = {
@@ -291,7 +274,7 @@ def save_results(results, output_dir):
     with open(summary_path, 'w') as f:
         json.dump(summary, f, indent=2)
 
-def main(data_path, output_dir='outputs'):
+def main(data_path, output_dir='outputs', pickle_path=None):
     print("="*60)
     print("Intrusion Detection ML Pipeline")
     print("="*60)
@@ -299,14 +282,28 @@ def main(data_path, output_dir='outputs'):
     print(f"Output directory: {output_dir}")
     print("="*60)
     
-    # Load data and preprocess
-    X, y = load(data_path)
-    y_class = param.DATA_PARAMS.get('class', None) if hasattr(param, 'DATA_PARAMS') else None
-    samples = param.DATA_PARAMS.get('samples', None) if hasattr(param, 'DATA_PARAMS') else None
     resamp_method = param.RESAMPLING_PARAMS.get('method') if hasattr(param, 'RESAMPLING_PARAMS') else None
-    X_train, X_val, X_test, y_train, y_val, y_test = preprocess(X, y, y_class, samples, resamp_method)
+    y_class = param.DATA_PARAMS.get('class', None) if hasattr(param, 'DATA_PARAMS') else None
+    X_train, y_train, X_val, y_val, X_test, y_test = None, None, None, None, None, None
+    
+    # Load data and preprocess
+    if pickle_path is not None:
+        print(f"Loading preprocessed data from {pickle_path}...")
+        
+        pickle_folder = os.path.join(pickle_path, resamp_method if resamp_method else 'unresampled')
+        train_pickle = os.path.join(pickle_folder, 'train.pkl')
+        val_pickle = os.path.join(pickle_folder, 'val.pkl')
+        test_pickle = os.path.join(pickle_path, 'test.pkl')
+        X_train, y_train = load_data_pickle(train_pickle)
+        X_val, y_val = load_data_pickle(val_pickle)
+        X_test, y_test = load_data_pickle(test_pickle)
+    
+    if X_train is None or X_val is None or X_test is None:
+        X, y = load(data_path)
+        samples = param.DATA_PARAMS.get('samples', None) if hasattr(param, 'DATA_PARAMS') else None
+        X_train, X_val, X_test, y_train, y_val, y_test = preprocess(X, y, y_class, samples, resamp_method)
+    
     save_params(output_dir)
-    save_datasets(output_dir, X_train, y_train, X_val, y_val)
 
     results = {}
 
@@ -346,6 +343,7 @@ if __name__ == "__main__":
     
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_path', nargs='?', default="../data/mixalldata_clean.csv", help="Path to the input CSV data file")
+    parser.add_argument('--pickle_path', nargs='?', default=None, help="Optional path to a pickle file containing preprocessed data (overrides data_path if provided)")
     parser.add_argument('--output_path', nargs='?', default="outputs", help="Directory to save outputs")
     parser.add_argument('--timestamp', nargs='?', default=datetime.now().strftime("%Y%m%d_%H%M%S"), help="Optional timestamp string for output directory naming")
     args = parser.parse_args()
@@ -361,4 +359,4 @@ if __name__ == "__main__":
     os.makedirs(output_dir, exist_ok=True)
 
     # Run the pipeline
-    main(args.data_path, output_dir)
+    main(args.data_path, output_dir, args.pickle_path)
