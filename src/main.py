@@ -61,13 +61,20 @@ def preprocess(X, y, y_class=None, samples=None, resamp_method=None):
         random_state=param.DATA_PARAMS['random_state'],
         stratify=y
     )
-    val_size = param.DATA_PARAMS['validation_size'] / (1 - param.DATA_PARAMS['test_size'])
-    X_train, X_val, y_train, y_val = train_test_split(
-        X_temp, y_temp,
-        test_size=val_size,
-        random_state=param.DATA_PARAMS['random_state'],
-        stratify=y_temp
-    )
+    
+    # If there is no hyperparameter tuning, we don't create a separate validation set and instead combine it with the training set to maximize data for fitting
+    if hasattr(param, 'GRID_PARAMS'):
+        val_size = param.DATA_PARAMS['validation_size'] / (1 - param.DATA_PARAMS['test_size'])
+        X_train, X_val, y_train, y_val = train_test_split(
+            X_temp, y_temp,
+            test_size=val_size,
+            random_state=param.DATA_PARAMS['random_state'],
+            stratify=y_temp
+        )
+    else:
+        X_train, y_train = X_temp, y_temp
+        X_val, y_val = np.array([]), np.array([])
+    
     print(f"Train set: {X_train.shape[0]} samples")
     print(f"Validation set: {X_val.shape[0]} samples")
     print(f"Test set: {X_test.shape[0]} samples")
@@ -191,13 +198,11 @@ def train(model_name, X_train, y_train, X_val, y_val):
         return wrapped, gs
     else:
         # No grid provided: fit the estimator directly using default hyperparameters
-        # Append the validation set to the training set because there is no tuning
+        # Validation set is not used (preprocess should have handled merging train and val)
         print(f"\n{'='*60}")
         print(f"Tuning and training {model_name} with default parameters...")
         print(f"{'='*60}")
         hyperparams = param.HYPERPARAMETERS.get(model_name, {})
-        X_train = np.concatenate([X_train, X_val])
-        y_train = np.concatenate([y_train, y_val])
         wrapped = Base(model_name, estimator)
         wrapped.train(X_train, y_train, **hyperparams)
         return wrapped, None
